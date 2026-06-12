@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AeroPrompt - Interactive Lesson Prompt Generator</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#312e81',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom scrollbar rules */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #4b5563;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    body {
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-white">
+
+  <!-- Header Section -->
+  <header class="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur sticky top-0 z-40 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="p-2 bg-brand-600 rounded-xl text-white shadow-lg shadow-brand-500/20">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+            AeroPrompt
+            <span class="text-xs font-semibold bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded-full border border-brand-200 dark:border-brand-800">v1.2</span>
+          </h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400">AWS Academy Curriculum Prompt Architect</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- Theme Toggle Button -->
+        <button id="themeToggle" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-all focus:outline-none focus:ring-2 focus:ring-brand-500" aria-label="Toggle Theme">
+          <!-- Moon Icon (Visible in Light Mode) -->
+          <svg id="moonIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+          </svg>
+          <!-- Sun Icon (Visible in Dark Mode) -->
+          <svg id="sunIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m2.828 0l-.707-.707m12.728-12.728l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    
+    <!-- Controls Sidebar (Left Column) -->
+    <section class="lg:col-span-7 flex flex-col gap-5 overflow-y-auto">
+      
+      <!-- Quick Presets Box -->
+      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+        <div class="flex items-center justify-between mb-3">
+          <label class="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+            <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+            </svg>
+            Pre-loaded Course Module (AWS Cloud Architecting)
+          </label>
+          <span class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-md font-mono">17 Presets</span>
+        </div>
+        <select id="modulePreset" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none text-slate-700 dark:text-slate-300">
+          <option value="custom">-- Custom Lesson Topic (Manual Entry) --</option>
+          <!-- Pre-filled dynamically via JS -->
+        </select>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mt-2">Selecting a module pre-populates the Title, Subject, Objectives, and Key Terms based on official SAA-C03 guide objectives.</p>
+      </div>
+
+      <!-- Core Lesson Settings Accordion -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors overflow-hidden">
+        <div class="p-5 border-b border-slate-100 dark:border-slate-800">
+          <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center text-xs font-bold">1</span>
+            Core Identity Configuration
+          </h2>
+        </div>
+        
+        <div class="p-5 space-y-4">
+          <!-- Lesson Title Toggle & Input -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="lessonTitle" class="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Lesson Title</label>
+              <div class="flex items-center gap-1.5">
+                <input type="checkbox" id="titleToggle" checked class="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                <span class="text-xs text-slate-500">Include</span>
+              </div>
+            </div>
+            <input type="text" id="lessonTitle" placeholder="e.g. Building Decoupled Architectures" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none transition-all">
+          </div>
+
+          <!-- Lesson Subject Toggle & Input -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="lessonSubject" class="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Subject / Course Domain</label>
+              <div class="flex items-center gap-1.5">
+                <input type="checkbox" id="subjectToggle" checked class="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                <span class="text-xs text-slate-500">Include</span>
+              </div>
+            </div>
+            <input type="text" id="lessonSubject" placeholder="e.g. AWS Cloud Architecting (ITNW 1336)" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none transition-all">
+          </div>
+        </div>
+      </div>
+
+      <!-- Pedagogy Components Builder -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+        <div class="p-5 border-b border-slate-100 dark:border-slate-800">
+          <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center text-xs font-bold">2</span>
+            Lesson Elements & Pedagogy Specs
+          </h2>
+        </div>
+
+        <div class="p-5 space-y-6">
+          
+          <!-- Learning Objectives Component -->
+          <div class="pb-5 border-b border-slate-100 dark:border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <input type="checkbox" id="objectivesToggle" checked class="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                <span class="font-semibold text-sm text-slate-800 dark:text-slate-200">Learning Objectives</span>
+              </div>
+              <span class="text-xs text-slate-400">Bloom's Taxonomy aligned</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="objectivesSubControls">
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Bloom's Level Preference</label>
+                <select id="bloomsLevel" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="Any level">Dynamic (Any / Mixed)</option>
+                  <option value="Applying and Analyzing">Applying & Analyzing</option>
+                  <option value="Evaluating and Creating">Evaluating & Creating</option>
+                  <option value="Remembering and Understanding">Remembering & Understanding</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Custom Objectives Context (Optional)</label>
+                <textarea id="customObjectivesText" rows="1" placeholder="Differentiate tightly vs loosely..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1 text-xs focus:outline-none"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Key Terms and Concepts -->
+          <div class="pb-5 border-b border-slate-100 dark:border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <input type="checkbox" id="termsToggle" checked class="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                <span class="font-semibold text-sm text-slate-800 dark:text-slate-200">Key Terms & Concepts</span>
+              </div>
+              <span class="text-xs text-slate-400">Glossary of items</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="termsSubControls">
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Format Type</label>
+                <select id="termsFormat" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="Key terms with rich pedagogical definitions and visual diagrams">Definitions list</option>
+                  <option value="Flashcard-style concepts (term + question/answer pair)">Flashcard format</option>
+                  <option value="Concept Map structure mapping connections between terms">Concept Map schema</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Specific Terms to Focus On</label>
+                <textarea id="customTermsText" rows="1" placeholder="e.g. SQS, SNS, Queue, Decoupling" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1 text-xs focus:outline-none"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pretest -->
+          <div class="pb-5 border-b border-slate-100 dark:border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <input type="checkbox" id="pretestToggle" class="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                <span class="font-semibold text-sm text-slate-800 dark:text-slate-200">Pretest</span>
+              </div>
+              <span class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full">Prior Knowledge</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 hidden" id="pretestSubControls">
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Quantity</label>
+                <select id="pretestQty" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="3">3 Questions</option>
+                  <option value="5" selected>5 Questions</option>
+                  <option value="10">10 Questions</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Format</label>
+                <select id="pretestFormat" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="Multiple Choice (4 options)">Multiple Choice</option>
+                  <option value="True/False with explanations">True/False</option>
+                  <option value="Concept check short-answer triggers">Short-Answer</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Answers Included</label>
+                <select id="pretestAnswers" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="provided at the absolute end of the pretest section">At the end</option>
+                  <option value="hidden using Markdown spoiler toggles">Markdown Spoiler tag</option>
+                  <option value="not provided (instruct the AI to write questions only)">Questions only</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lesson Content Component -->
+          <div class="pb-5 border-b border-slate-100 dark:border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <input type="checkbox" id="contentToggle" checked class="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                <span class="font-semibold text-sm text-slate-800 dark:text-slate-200">Lesson Content / Body Text</span>
+              </div>
+              <span class="text-xs text-slate-400">Main Instruction</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="contentSubControls">
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Explaining Depth</label>
+                <select id="contentDepth" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="detailed and intermediate level for certification prep">Intermediate / Standard</option>
+                  <option value="deeply technical and comprehensive, focusing on advanced architecture">Advanced / Technical</option>
+                  <option value="foundational, conceptual, and accessible for beginners">Introductory / Conceptual</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Instructional Tone</label>
+                <select id="contentTone" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="Socratic, encouraging critical analysis through questions">Socratic / Engaging</option>
+                  <option value="structured, highly technical, authoritative, and professional">Technical Academic</option>
+                  <option value="friendly, highly narrative, and scenario-driven">Narrative / Scenario</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Visual Cues / Markdown</label>
+                <select id="contentFormatting" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="rich markdown callouts, info blocks, and warning alerts for highlights">Callout Boxes & Bold</option>
+                  <option value="clean, minimal visual styling with simple bullet points and clean headings">Minimal Layout</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analogies -->
+          <div class="pb-5 border-b border-slate-100 dark:border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <input type="checkbox" id="analogiesToggle" checked class="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                <span class="font-semibold text-sm text-slate-800 dark:text-slate-200">Analogies</span>
+              </div>
+              <span class="text-xs text-slate-400">For complex concepts</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="analogiesSubControls">
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Analogy Metaphor Type</label>
+                <select id="analogyDomain" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="Everyday metaphorical concepts (e.g., Post Office for queuing, cooking for compute)">Everyday & Common Life</option>
+                  <option value="Physical mechanics and infrastructure (e.g., highway transport, plumbing networks)">Mechanical & Infrastructure</option>
+                  <option value="Natural ecosystems and biology systems">Biological & Natural Ecosystems</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Density</label>
+                <select id="analogyDensity" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="One master analogy woven deeply throughout the topics">One Master Metaphor</option>
+                  <option value="Brief, micro-analogies customized for every key term">Micro-analogies per concept</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Real-world Examples -->
+          <div class="pb-5 border-b border-slate-100 dark:border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <input type="checkbox" id="examplesToggle" checked class="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                <span class="font-semibold text-sm text-slate-800 dark:text-slate-200">Real-World Examples</span>
+              </div>
+              <span class="text-xs text-slate-400">Industry scenarios</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="examplesSubControls">
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Target Industry / Context</label>
+                <select id="examplesIndustry" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="The AWS Café (Frank & Martha's coffee shop scaling journey)">The AWS Academy Café Scenario</option>
+                  <option value="A High-traffic E-commerce Store (e.g., Prime Day load handling)">E-commerce & Streaming (Netflix, Amazon)</option>
+                  <option value="Finance / Banking Secure Transactions">Fintech & High-Security Banking</option>
+                  <option value="Healthcare Patient Record Storage & Auditing">Healthtech & Medical Privacy</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Example Structure</label>
+                <select id="examplesStructure" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="Practical, architecture-diagram description format, stating the challenge and architectural solution">Challenge & Resolution Structure</option>
+                  <option value="Brief, modular snippets embedded inside the content block">Embedded context snippets</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary Component -->
+          <div class="pb-5 border-b border-slate-100 dark:border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <input type="checkbox" id="summaryToggle" checked class="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                <span class="font-semibold text-sm text-slate-800 dark:text-slate-200">Summary</span>
+              </div>
+              <span class="text-xs text-slate-400">Key Takeaways</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="summarySubControls">
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Style</label>
+                <select id="summaryStyle" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="Quick bullet points stating critical technical constraints">Technical Takeaways (Bullet points)</option>
+                  <option value="A high-level TL;DR narrative summarizing the paradigm shift">Executive TL;DR Narrative</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-slate-500 block mb-1 font-medium">Extra Summary Instruction</label>
+                <input type="text" id="summaryCustom" placeholder="e.g. Include checklist for exam review" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1 text-xs focus:outline-none">
+              </div>
+            </div>
+          </div>
+
+          <!-- Review Quiz -->
+          <div class="pb-5 border-b border-slate-100 dark:border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <input type="checkbox" id="quizToggle" checked class="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                <span class="font-semibold text-sm text-slate-800 dark:text-slate-200">Review Quiz</span>
+              </div>
+              <span class="text-xs bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded-full">Active Recall</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="quizSubControls">
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Questions</label>
+                <select id="quizQty" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="3">3 Questions</option>
+                  <option value="5" selected>5 Questions</option>
+                  <option value="10">10 Questions</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Question Style</label>
+                <select id="quizStyle" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="Multiple Choice (4 options) reflecting Solutions Architect SAA-C03 exam formats">AWS Exam Style (SAA-C03)</option>
+                  <option value="True/False with conceptual explanations">True / False</option>
+                  <option value="Open scenarios where students must architect a brief text response">Architectural Scenarios</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Answer Guide</label>
+                <select id="quizAnswers" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="Include robust explanations detailing why correct answers are correct and why other answers are wrong, placed at the end">Explanations & Distractors</option>
+                  <option value="Markdown collapsible spoilers containing the answer keys only">Simple Spoiler Key</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- ADA Checklist -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <input type="checkbox" id="adaToggle" checked class="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                <span class="font-semibold text-sm text-slate-800 dark:text-slate-200">ADA Compliance Checklist</span>
+              </div>
+              <span class="text-xs bg-teal-100 dark:bg-teal-900/40 text-teal-800 dark:text-teal-300 px-2.5 py-0.5 rounded-full font-medium">WCAG 2.2</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="adaSubControls">
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Accessibility Standard</label>
+                <select id="adaStandards" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="WCAG 2.2 Level AA guidelines for online textual content (use clear structural hierarchy, high contrast warnings, text-only tables, and placeholder descriptive alt texts for illustrations)">WCAG 2.2 AA (Universal Web)</option>
+                  <option value="Strict screen reader compatibility with structural aria-landmarks patterns and clear screen narration guidance">Screen Reader Optimization</option>
+                  <option value="Neurodiverse and cognitive friendliness (including executive lists, focused visual separators, and bulleted simple-vocabulary takeaways)">Cognitively Friendly Layout</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-slate-500 block mb-1">Include Content-specific Checklist Items</label>
+                <select id="adaIncludeSpecifics" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="Yes, contextual checklist for this exact technical lesson topic">Contextual ADA elements</option>
+                  <option value="No, keep it as a generalized lesson planning accessibility template">General Lesson Planning Checklist</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Output Prompt Editor Area (Right Column) -->
+    <section class="lg:col-span-5 flex flex-col gap-4">
+      
+      <!-- AI Optimization Selector -->
+      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+        <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-3">Optimize Prompt For AI Model</label>
+        
+        <div class="grid grid-cols-2 gap-2" id="aiPlatformContainer">
+          <!-- Claude -->
+          <button type="button" data-platform="claude" class="platform-btn flex items-center justify-center gap-2 p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-brand-500 font-semibold text-xs transition-all bg-brand-50 dark:bg-brand-950 border-brand-500 text-brand-600 dark:text-brand-400">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            Claude (Sonnet/Opus)
+          </button>
+          
+          <!-- ChatGPT -->
+          <button type="button" data-platform="chatgpt" class="platform-btn flex items-center justify-center gap-2 p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-brand-500 font-semibold text-xs transition-all text-slate-600 dark:text-slate-400">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-7.3 16.8l-.7 2.5 2.6-.7A10 10 0 1 0 12 2z"/></svg>
+            ChatGPT (GPT-4o)
+          </button>
+
+          <!-- Gemini -->
+          <button type="button" data-platform="gemini" class="platform-btn flex items-center justify-center gap-2 p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-brand-500 font-semibold text-xs transition-all text-slate-600 dark:text-slate-400">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L9 9l-7 3 7 3 3 7 3-7 7-3-7-3-3-7z"/></svg>
+            Gemini (Flash/Pro)
+          </button>
+
+          <!-- Standard -->
+          <button type="button" data-platform="standard" class="platform-btn flex items-center justify-center gap-2 p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-brand-500 font-semibold text-xs transition-all text-slate-600 dark:text-slate-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            Generic LLM Standard
+          </button>
+        </div>
+      </div>
+
+      <!-- Generated Prompt Box -->
+      <div class="bg-slate-900 text-slate-100 rounded-2xl border border-slate-800 shadow-xl flex-grow flex flex-col overflow-hidden relative min-h-[400px]">
+        <!-- Bar controls -->
+        <div class="bg-slate-950 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-3.5 h-3.5 rounded-full bg-red-500/80"></span>
+            <span class="w-3.5 h-3.5 rounded-full bg-yellow-500/80"></span>
+            <span class="w-3.5 h-3.5 rounded-full bg-green-500/80"></span>
+            <span class="text-xs text-slate-400 font-mono ml-2">lesson_prompt_agent.txt</span>
+          </div>
+          <div class="text-xs text-slate-400 font-mono" id="charCounter">0 characters</div>
+        </div>
+
+        <!-- Copy Action Toast Notification inside box -->
+        <div id="copyBadge" class="absolute top-14 right-4 bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg font-semibold flex items-center gap-1.5 opacity-0 pointer-events-none transition-all duration-300 transform translate-y-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          Prompt Copied! Ready to paste
+        </div>
+
+        <!-- TextArea Output -->
+        <textarea id="promptOutput" class="w-full flex-grow p-5 bg-transparent border-0 focus:ring-0 focus:outline-none font-mono text-xs sm:text-sm text-slate-300 leading-relaxed overflow-y-auto" style="resize: none;" spellcheck="false"></textarea>
+
+        <!-- Actions -->
+        <div class="p-4 bg-slate-950 border-t border-slate-850 flex items-center gap-3">
+          <button id="copyBtn" class="flex-grow flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-500 text-white py-3 px-4 rounded-xl font-semibold text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand-500 active:scale-[0.98]">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+            Copy Custom Lesson Prompt
+          </button>
+          
+          <button id="resetBtn" title="Reset fields to original defaults" class="p-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-300 border border-slate-700 hover:border-slate-600 transition-all focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15H19M9 5a7 7 0 00-7 7h2"></path></svg>
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="border-t border-slate-200 dark:border-slate-800 py-4 text-center text-xs text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 transition-colors">
+    <div class="max-w-7xl mx-auto px-4">
+      Designed with accessibility and AWS curriculum alignment in mind. Fast, robust, responsive.
+    </div>
+  </footer>
+
+  <!-- App Code Logic -->
+  <script>
+    // AWS Academy course Modules (pre-parsed data directly extracted from slide decks)
+    const awsModules = [
+      {
+        id: 1,
+        title: "Module 01: Welcome to AWS Academy Cloud Architecting",
+        subject: "Introduction to Cloud Computing & Solutions Roles",
+        objectives: "Recognize the elements of the café business case; describe the role of a cloud architect; explore SAA-C03 certification requirements.",
+        terms: "Cloud Architect, Solutions Architect - Associate SAA-C03, Café Business Case scenario, Cloud Deployment Models"
+      },
+      {
+        id: 2,
+        title: "Module 02: Introducing Cloud Architecting",
+        subject: "AWS Well-Architected Framework and Principles",
+        objectives: "Define cloud architecture; design and evaluate architectures using the AWS Well-Architected Framework; implement scalability, automation, disposable resources, loose-coupling, and caching.",
+        terms: "AWS Well-Architected Framework, 6 Pillars (Security, Reliability, Cost Optimization, Operational Excellence, Performance Efficiency, Sustainability), AWS Regions, Availability Zones, Edge Locations"
+      },
+      {
+        id: 3,
+        title: "Module 03: Securing Access",
+        subject: "AWS IAM (Identity and Access Management)",
+        objectives: "Implement AWS Identity and Access Management (IAM); configure users, groups, policies, roles; apply multi-factor authentication (MFA); manage principal permissions.",
+        terms: "IAM Users, IAM Groups, IAM Policies (JSON syntax, Allow/Deny, Resource, Actions), IAM Roles, Multi-Factor Authentication (MFA), Principle of Least Privilege"
+      },
+      {
+        id: 4,
+        title: "Module 04: Adding a Storage Layer with Amazon S3",
+        subject: "Object Storage & Static Website Hosting",
+        objectives: "Define Amazon Simple Storage Service (Amazon S3); configure bucket policies and ACLs; enable S3 versioning and object lifecycles; deploy a static website on Amazon S3; understand cross-Region replication.",
+        terms: "Amazon S3, S3 Buckets, Objects, S3 Versioning, Object Lifecycle Policies, Amazon S3 Storage Classes, S3 Static Web Hosting, Bucket Policies, Cross-Region Replication"
+      },
+      {
+        id: 5,
+        title: "Module 05: Adding a Compute Layer",
+        subject: "Amazon EC2 (Elastic Compute Cloud) & Storage Options",
+        objectives: "Provision and configure Amazon Elastic Compute Cloud (Amazon EC2) instances; utilize Amazon Machine Images (AMIs); attach and manage Amazon Elastic Block Store (EBS) and Amazon Elastic File System (EFS); execute User Data configuration scripts.",
+        terms: "Amazon EC2, Amazon Machine Image (AMI), Instance Types, User Data, EBS (Elastic Block Store), EFS (Elastic File System), Spot Instances, Reserved Instances, Savings Plans"
+      },
+      {
+        id: 6,
+        title: "Module 06: Adding a Database Layer",
+        subject: "AWS Managed Database Options",
+        objectives: "Differentiate relational and non-relational database services; select and deploy Amazon Relational Database Service (Amazon RDS) with backup and read-replica strategies; evaluate Amazon DynamoDB use cases; inspect AWS Database Migration Service (DMS).",
+        terms: "Amazon RDS, Amazon DynamoDB, Relational vs. Non-Relational (NoSQL), Multi-AZ Deployments, Read Replicas, RDS Proxy, AWS Database Migration Service (DMS), Purpose-built databases"
+      },
+      {
+        id: 7,
+        title: "Module 07: Creating a Networking Environment",
+        subject: "Amazon VPC (Virtual Private Cloud) & Infrastructure Isolation",
+        objectives: "Architect a Virtual Private Cloud (VPC); partition custom public and private subnets; configure Route Tables, Internet Gateways, NAT Gateways; manage network security with Security Groups and Network Access Control Lists (NACLs).",
+        terms: "Amazon VPC, Public Subnets, Private Subnets, Route Tables, Internet Gateway (IGW), NAT Gateway, Security Groups (Stateful), NACLs (Stateless), CIDR blocks"
+      },
+      {
+        id: 8,
+        title: "Module 08: Connecting Networks",
+        subject: "Hybrid Architectures & Scaling Connections",
+        objectives: "Establish secure connection paths between isolated VPCs; describe VPC Peering; configure AWS Site-to-Site VPN; connect physical corporate facilities with AWS Direct Connect; scale routing networks via AWS Transit Gateway.",
+        terms: "VPC Peering, AWS Transit Gateway, AWS Site-to-Site VPN, AWS Direct Connect, Virtual Private Gateway, Customer Gateway"
+      },
+      {
+        id: 9,
+        title: "Module 09: Securing User, Application, and Data Access",
+        subject: "Data Encryption, Organization Security, and Federated Access",
+        objectives: "Utilize AWS Organizations and Service Control Policies (SCPs); manage user federation and tokens using Amazon Cognito; protect confidential objects using AWS Key Management Service (KMS) encryption.",
+        terms: "AWS Key Management Service (KMS), Amazon Cognito (User Pools & Identity Pools), AWS Organizations, Service Control Policies (SCPs), Encryption at Rest, Encryption in Transit"
+      },
+      {
+        id: 10,
+        title: "Module 10: Implementing Monitoring, Elasticity, and High Availability",
+        subject: "Amazon CloudWatch, Load Balancing, and Auto Scaling",
+        objectives: "Examine proactive system metrics using Amazon CloudWatch and EventBridge; configure Amazon EC2 Auto Scaling; set up Application and Network Load Balancers; deploy Amazon Route 53 for DNS failover and routing.",
+        terms: "Amazon CloudWatch (Metrics & Alarms), Amazon EventBridge, Amazon EC2 Auto Scaling (Scaling Policies), Elastic Load Balancing (ALB, NLB), Amazon Route 53 (Failover, Geolocation, Simple)"
+      },
+      {
+        id: 11,
+        title: "Module 11: Automating Your Architecture",
+        subject: "Infrastructure as Code (IaC) with AWS CloudFormation",
+        objectives: "Describe benefits of infrastructure automation; construct and modify JSON/YAML AWS CloudFormation templates; automate repeatable resource setups; use AWS Quick Start models.",
+        terms: "Infrastructure as Code (IaC), AWS CloudFormation (Resources, Parameters, Outputs, Mappings), CloudFormation Stacks, Version Control Integration"
+      },
+      {
+        id: 12,
+        title: "Module 12: Caching Content",
+        subject: "Content Delivery Networks & In-Memory Databases",
+        objectives: "Identify latency reductions; build caching architectures using Amazon CloudFront edge locations; describe Amazon ElastiCache integration for rapid database request offloading.",
+        terms: "Amazon CloudFront, Edge Locations, Origin Servers, Cache Hit Ratio, TTL (Time to Live), Amazon ElastiCache (Redis & Memcached), In-Memory Cache"
+      },
+      {
+        id: 13,
+        title: "Module 13: Building Decoupled Architectures",
+        subject: "Messaging Services & Asynchronous Communication",
+        objectives: "Differentiate tightly and loosely coupled patterns; isolate application layer workloads using Amazon Simple Queue Service (SQS) message queues; establish publish-subscribe channels with Amazon Simple Notification Service (SNS).",
+        terms: "Loose Coupling, Amazon SQS (Standard vs. FIFO queues), Amazon SNS (Topics, Subscriptions), Publish-Subscribe Pattern, Amazon MQ, Message Decoupling"
+      },
+      {
+        id: 14,
+        title: "Module 14: Building Serverless Architectures and Microservices",
+        subject: "AWS Lambda, API Gateway, and Container Services",
+        objectives: "Define serverless microservice structures; deploy stateless code using AWS Lambda functions; scale connection channels through Amazon API Gateway; choreograph microservice execution steps with AWS Step Functions; differentiate container structures (ECS, EKS, Fargate).",
+        terms: "AWS Lambda, Amazon API Gateway, Microservices, Serverless, AWS Step Functions, Amazon ECS (Elastic Container Service), Amazon EKS (Elastic Kubernetes Service), AWS Fargate, Containers vs. Virtual Machines"
+      },
+      {
+        id: 15,
+        title: "Module 15: Data Engineering Patterns",
+        subject: "Data Ingestion pipelines & Analytics Architectures",
+        objectives: "Use Well-Architected Framework principles for ingestion; design batch and streaming pipeline architectures; choose appropriate AWS analytical storage databases (Amazon Redshift, Athena, Kinesis).",
+        terms: "Batch Ingestion, Streaming Data Ingestion, Amazon Kinesis (Data Streams & Firehose), Amazon Redshift, Amazon Athena, AWS Glue, Data Lakes"
+      },
+      {
+        id: 16,
+        title: "Module 16: Planning for Disaster",
+        subject: "Resiliency, RTO, RPO, & Disaster Recovery Strategies",
+        objectives: "Identify strategies for enterprise disaster planning; calculate RPO and RTO; implement common disaster recovery (DR) architectures (Backup & Restore, Pilot Light, Warm Standby, Multi-site).",
+        terms: "RTO (Recovery Time Objective), RPO (Recovery Point Objective), Disaster Recovery, Backup & Restore, Pilot Light, Warm Standby, Multi-Site / Active-Active"
+      },
+      {
+        id: 17,
+        title: "Module 17: Bridging to Certification",
+        subject: "SAA-C03 AWS Certified Solutions Architect Associate Preparation",
+        objectives: "Examine study plans; evaluate representative practice scenarios; analyze multiple-response logic patterns; organize targeted domain reviews.",
+        terms: "SAA-C03 Exam Domains, Multiple-choice Strategies, Distractor Analysis, Exam Blueprint guidelines"
+      }
+    ];
+
+    // AI Platform customization instructions
+    const platformInstructions = {
+      claude: `[AI PLATFORM FORMATTING DIRECTIVE: Claude]
+Adopt a highly structured, clear, and analytical tone. Use rich Markdown formatting including explicit subheadings, styled bulleted lists, and bold definitions. Do not use generic hype vocabulary (e.g. "delve", "testament", "revolutionize"). Provide clean, complete instructional descriptions without repeating conversational introductory filler. Use bold blocks to highlight warning callouts.`,
+      
+      chatgpt: `[AI PLATFORM FORMATTING DIRECTIVE: ChatGPT]
+Structure the output using bold headings, styled list groupings, and informational tables where applicable. Provide detailed, actionable instruction. Ensure code highlights are clearly formatted inside markdown blocks. Highlight core architectural constraints cleanly. Include robust logical explanations in tests.`,
+      
+      gemini: `[AI PLATFORM FORMATTING DIRECTIVE: Gemini]
+Generate a highly organized visual learning resource. Use robust double-asterisks formatting for key highlights. Include tabular grids for architectural comparison metrics where appropriate. Provide explicit questions featuring precise feedback keys for both pretest and review sections to enhance learning retention.`,
+      
+      standard: `[AI PLATFORM FORMATTING DIRECTIVE: Standard]
+Format using clear, universally supported markdown structures. Use logical indentation, consistent visual separation borders, and clear header lines between different parts of the lesson plan for clean reading.`
+    };
+
+    // State Tracking
+    let selectedPlatform = 'claude';
+
+    // Elements
+    const modulePreset = document.getElementById('modulePreset');
+    const lessonTitleInput = document.getElementById('lessonTitle');
+    const lessonSubjectInput = document.getElementById('lessonSubject');
+    
+    // Toggles
+    const titleToggle = document.getElementById('titleToggle');
+    const subjectToggle = document.getElementById('subjectToggle');
+    const objectivesToggle = document.getElementById('objectivesToggle');
+    const termsToggle = document.getElementById('termsToggle');
+    const pretestToggle = document.getElementById('pretestToggle');
+    const contentToggle = document.getElementById('contentToggle');
+    const analogiesToggle = document.getElementById('analogiesToggle');
+    const examplesToggle = document.getElementById('examplesToggle');
+    const summaryToggle = document.getElementById('summaryToggle');
+    const quizToggle = document.getElementById('quizToggle');
+    const adaToggle = document.getElementById('adaToggle');
+
+    // Extra Fields / Configs
+    const bloomsLevel = document.getElementById('bloomsLevel');
+    const customObjectivesText = document.getElementById('customObjectivesText');
+    const termsFormat = document.getElementById('termsFormat');
+    const customTermsText = document.getElementById('customTermsText');
+    const pretestQty = document.getElementById('pretestQty');
+    const pretestFormat = document.getElementById('pretestFormat');
+    const pretestAnswers = document.getElementById('pretestAnswers');
+    const contentDepth = document.getElementById('contentDepth');
+    const contentTone = document.getElementById('contentTone');
+    const contentFormatting = document.getElementById('contentFormatting');
+    const analogyDomain = document.getElementById('analogyDomain');
+    const analogyDensity = document.getElementById('analogyDensity');
+    const examplesIndustry = document.getElementById('examplesIndustry');
+    const examplesStructure = document.getElementById('examplesStructure');
+    const summaryStyle = document.getElementById('summaryStyle');
+    const summaryCustom = document.getElementById('summaryCustom');
+    const quizQty = document.getElementById('quizQty');
+    const quizStyle = document.getElementById('quizStyle');
+    const quizAnswers = document.getElementById('quizAnswers');
+    const adaStandards = document.getElementById('adaStandards');
+    const adaIncludeSpecifics = document.getElementById('adaIncludeSpecifics');
+
+    // Outputs
+    const promptOutput = document.getElementById('promptOutput');
+    const charCounter = document.getElementById('charCounter');
+    const copyBtn = document.getElementById('copyBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const copyBadge = document.getElementById('copyBadge');
+
+    // Initialize Presets Select
+    function initPresets() {
+      awsModules.forEach(mod => {
+        const opt = document.createElement('option');
+        opt.value = mod.id;
+        opt.textContent = mod.title;
+        modulePreset.appendChild(opt);
+      });
+      
+      // Default Load Module 13
+      modulePreset.value = "13";
+      loadPreset(13);
+    }
+
+    function loadPreset(id) {
+      const mod = awsModules.find(m => m.id === parseInt(id));
+      if (mod) {
+        lessonTitleInput.value = mod.title;
+        lessonSubjectInput.value = mod.subject;
+        customObjectivesText.value = mod.objectives;
+        customTermsText.value = mod.terms;
+      } else {
+        lessonTitleInput.value = "";
+        lessonSubjectInput.value = "";
+        customObjectivesText.value = "";
+        customTermsText.value = "";
+      }
+      generatePrompt();
+    }
+
+    // Toggle Subcontrols visibility based on main checkboxes
+    function setupVisibilityListeners() {
+      const toggleSubControls = (checkboxId, subControlsId) => {
+        const checkbox = document.getElementById(checkboxId);
+        const subCtrls = document.getElementById(subControlsId);
+        if (!subCtrls) return;
+        
+        const update = () => {
+          if (checkbox.checked) {
+            subCtrls.classList.remove('hidden');
+          } else {
+            subCtrls.classList.add('hidden');
+          }
+        };
+        checkbox.addEventListener('change', () => {
+          update();
+          generatePrompt();
+        });
+        update(); // run initial
+      };
+
+      toggleSubControls('objectivesToggle', 'objectivesSubControls');
+      toggleSubControls('termsToggle', 'termsSubControls');
+      toggleSubControls('pretestToggle', 'pretestSubControls');
+      toggleSubControls('contentToggle', 'contentSubControls');
+      toggleSubControls('analogiesToggle', 'analogiesSubControls');
+      toggleSubControls('examplesToggle', 'examplesSubControls');
+      toggleSubControls('summaryToggle', 'summarySubControls');
+      toggleSubControls('quizToggle', 'quizSubControls');
+      toggleSubControls('adaToggle', 'adaSubControls');
+
+      // Simple triggers for any other input change
+      const allInputs = [
+        lessonTitleInput, lessonSubjectInput, bloomsLevel, customObjectivesText,
+        termsFormat, customTermsText, pretestQty, pretestFormat, pretestAnswers,
+        contentDepth, contentTone, contentFormatting, analogyDomain, analogyDensity,
+        examplesIndustry, examplesStructure, summaryStyle, summaryCustom, quizQty,
+        quizStyle, quizAnswers, adaStandards, adaIncludeSpecifics, titleToggle, subjectToggle
+      ];
+
+      allInputs.forEach(input => {
+        input.addEventListener('input', generatePrompt);
+        input.addEventListener('change', generatePrompt);
+      });
+    }
+
+    // Generate prompt core template
+    function generatePrompt() {
+      let prompt = `You are an elite instructional designer, education specialist, and technical subject matter expert. 
+Your task is to write a comprehensive, highly engaging, and pedagogical-grade masterclass lesson based on the exact configuration details specified below.
+
+`;
+
+      // 1. Identity & Context
+      prompt += `========================================
+1. LESSON METADATA & FOCUS
+========================================\n`;
+      
+      if (titleToggle.checked && lessonTitleInput.value.trim()) {
+        prompt += `- Lesson Title: "${lessonTitleInput.value.trim()}"\n`;
+      } else if (titleToggle.checked) {
+        prompt += `- Lesson Title: (Contextual title determined by subject)\n`;
+      }
+
+      if (subjectToggle.checked && lessonSubjectInput.value.trim()) {
+        prompt += `- Lesson Subject Domain: "${lessonSubjectInput.value.trim()}"\n`;
+      } else if (subjectToggle.checked) {
+        prompt += `- Lesson Subject Domain: (Determine based on the lesson scope)\n`;
+      }
+      
+      prompt += `\n`;
+
+      // 2. Pedagogy Specs
+      prompt += `========================================
+2. STRUCTURAL COMPONENT DIRECTIVES
+========================================
+Construct the learning module adhering strictly to the enabled blocks below. Do NOT exclude any enabled sections.\n\n`;
+
+      if (objectivesToggle.checked) {
+        prompt += `[COMPONENT: LEARNING OBJECTIVES] (ENABLED)
+- Write explicit learning objectives using active, actionable pedagogical verbs.
+- Direct alignment: Align objectives to Bloom's taxonomy: "${bloomsLevel.value}".
+`;
+        if (customObjectivesText.value.trim()) {
+          prompt += `- Core objectives context to map: "${customObjectivesText.value.trim()}"\n`;
+        }
+        prompt += `\n`;
+      }
+
+      if (termsToggle.checked) {
+        prompt += `[COMPONENT: KEY TERMS & CONCEPTS GLOSSARY] (ENABLED)
+- Present a structural glossary using the following format: "${termsFormat.value}".
+- Ensure explanations clarify the semantic definitions as well as structural relationships.
+`;
+        if (customTermsText.value.trim()) {
+          prompt += `- Term focal points to include: "${customTermsText.value.trim()}"\n`;
+        }
+        prompt += `\n`;
+      }
+
+      if (pretestToggle.checked) {
+        prompt += `[COMPONENT: DIAGNOSTIC PRETEST] (ENABLED)
+- Generate a diagnostic pretest comprising ${pretestQty.value} questions.
+- Format style of questions: "${pretestFormat.value}".
+- Scoring / Answers: Answers should be "${pretestAnswers.value}".
+- Keep these conceptual to check if the student has prior baseline knowledge.
+\n`;
+      }
+
+      if (contentToggle.checked) {
+        prompt += `[COMPONENT: MAIN LESSON CONTENT] (ENABLED)
+- Present the core educational material.
+- Explanation Depth: Explain topics at a "${contentDepth.value}".
+- Instructional Tone: Keep the narrative "${contentTone.value}".
+- Formatting Rules: Enhance legibility using "${contentFormatting.value}". Include clear heading splits.
+\n`;
+      }
+
+      if (analogiesToggle.checked) {
+        prompt += `[COMPONENT: PEDAGOGICAL ANALOGIES] (ENABLED)
+- Provide strong conceptual analogies using the metaphor domain of "${analogyDomain.value}".
+- Metaphor integration rate: Use "${analogyDensity.value}".
+- Make complex concepts highly approachable and relatable.
+\n`;
+      }
+
+      if (examplesToggle.checked) {
+        prompt += `[COMPONENT: REAL-WORLD ARCHITECTURE EXAMPLES] (ENABLED)
+- Anchor theoretical lessons with real industry application.
+- Target Context/Case Study: "${examplesIndustry.value}".
+- Construction pattern: "${examplesStructure.value}".
+\n`;
+      }
+
+      if (summaryToggle.checked) {
+        prompt += `[COMPONENT: KEY TAKEAWAYS SUMMARY] (ENABLED)
+- Conclude the narrative block with a structured summary formatted as a "${summaryStyle.value}".
+`;
+        if (summaryCustom.value.trim()) {
+          prompt += `- Add specific directive: "${summaryCustom.value.trim()}"\n`;
+        }
+        prompt += `\n`;
+      }
+
+      if (quizToggle.checked) {
+        prompt += `[COMPONENT: REVIEW KNOWLEDGE CHECK QUIZ] (ENABLED)
+- Formulate a diagnostic review quiz consisting of ${quizQty.value} questions.
+- Style pattern: "${quizStyle.value}".
+- Scoring keys and feedback instructions: "${quizAnswers.value}".
+\n`;
+      }
+
+      if (adaToggle.checked) {
+        prompt += `[COMPONENT: ADA COMPLIANCE & ACCESSIBILITY CHECKLIST] (ENABLED)
+- Generate a practical accessibility checklist for the instructor presenting this lesson.
+- Apply guidelines from: "${adaStandards.value}".
+- Context-specific requirement: Use "${adaIncludeSpecifics.value}".
+\n`;
+      }
+
+      // Add Platform Instruction Guidelines
+      prompt += `========================================
+3. ENGINE SYSTEM DIRECTIONS
+========================================
+${platformInstructions[selectedPlatform]}
+
+Write the entire resulting lesson inside markdown blocks. Let's begin the comprehensive, accessible, and masterfully articulated lesson.`;
+
+      promptOutput.value = prompt;
+      charCounter.textContent = `${prompt.length.toLocaleString()} characters`;
+    }
+
+    // Set Platform Action Event
+    function setPlatform(platformId) {
+      selectedPlatform = platformId;
+      document.querySelectorAll('.platform-btn').forEach(btn => {
+        btn.classList.remove('bg-brand-50', 'dark:bg-brand-950', 'border-brand-500', 'text-brand-600', 'dark:text-brand-400');
+        btn.classList.add('text-slate-600', 'dark:text-slate-400');
+      });
+
+      const activeBtn = document.querySelector(`[data-platform="${platformId}"]`);
+      if (activeBtn) {
+        activeBtn.classList.remove('text-slate-600', 'dark:text-slate-400');
+        activeBtn.classList.add('bg-brand-50', 'dark:bg-brand-950', 'border-brand-500', 'text-brand-600', 'dark:text-brand-400');
+      }
+      generatePrompt();
+    }
+
+    // Event Listener setup
+    modulePreset.addEventListener('change', (e) => {
+      loadPreset(e.target.value);
+    });
+
+    document.querySelectorAll('.platform-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const platform = btn.getAttribute('data-platform');
+        setPlatform(platform);
+      });
+    });
+
+    // Copy to Clipboard with fallback logic for iframe/sandboxed constraints
+    function copyToClipboard() {
+      const textToCopy = promptOutput.value;
+      
+      // Standard Clipboard API
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textToCopy)
+          .then(() => showCopyNotification())
+          .catch(() => fallbackCopy(textToCopy));
+      } else {
+        fallbackCopy(textToCopy);
+      }
+    }
+
+    function fallbackCopy(text) {
+      try {
+        promptOutput.select();
+        document.execCommand('copy');
+        showCopyNotification();
+      } catch (err) {
+        console.error("Alternative copy execution failed: ", err);
+      }
+    }
+
+    function showCopyNotification() {
+      copyBadge.classList.remove('opacity-0', 'translate-y-1', 'pointer-events-none');
+      copyBadge.classList.add('opacity-100', 'translate-y-0');
+      
+      setTimeout(() => {
+        copyBadge.classList.remove('opacity-100', 'translate-y-0');
+        copyBadge.classList.add('opacity-0', 'translate-y-1', 'pointer-events-none');
+      }, 3000);
+    }
+
+    copyBtn.addEventListener('click', copyToClipboard);
+
+    // Reset Defaults
+    resetBtn.addEventListener('click', () => {
+      modulePreset.value = "13";
+      // Reset all main toggles to default
+      titleToggle.checked = true;
+      subjectToggle.checked = true;
+      objectivesToggle.checked = true;
+      termsToggle.checked = true;
+      pretestToggle.checked = false;
+      contentToggle.checked = true;
+      analogiesToggle.checked = true;
+      examplesToggle.checked = true;
+      summaryToggle.checked = true;
+      quizToggle.checked = true;
+      adaToggle.checked = true;
+
+      // Force change values to trigger rebuild
+      const event = new Event('change');
+      document.querySelectorAll('input[type="checkbox"]').forEach(c => c.dispatchEvent(event));
+      
+      loadPreset(13);
+      setPlatform('claude');
+    });
+
+    // Theme Switch Handler
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const moonIcon = document.getElementById('moonIcon');
+    const sunIcon = document.getElementById('sunIcon');
+
+    function applyTheme() {
+      const isDark = document.documentElement.classList.contains('dark') || 
+                     (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        sunIcon.classList.remove('hidden');
+        moonIcon.classList.add('hidden');
+      } else {
+        document.documentElement.classList.remove('dark');
+        moonIcon.classList.remove('hidden');
+        sunIcon.classList.add('hidden');
+      }
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+      applyTheme();
+    });
+
+    // Initial runs
+    // Check local storage for theme preference
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+
+    applyTheme();
+    initPresets();
+    setupVisibilityListeners();
+    generatePrompt();
+  </script>
+</body>
+</html>
