@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITNW 1336: Cloud Architecting - Blinn College</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        blinn: {
+                            blue: '#002F6C',
+                            gold: '#C5A059',
+                            slate: '#0F172A',
+                            accent: '#3B82F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons for Beautiful Academic Layouts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col">
+
+    <!-- TOP ANNOUNCEMENT BAR -->
+    <div class="bg-gradient-to-r from-blinn-blue to-blue-800 text-white py-2 px-4 text-center text-xs md:text-sm font-medium relative overflow-hidden">
+        <div class="relative z-10 flex items-center justify-center gap-2 flex-wrap">
+            <span class="bg-amber-500 text-slate-900 text-[10px] uppercase font-bold px-2 py-0.5 rounded">NEW Study Tool</span>
+            <span>Boost your learning with our new <strong>Interactive AI Prompt Generator</strong>!</span>
+            <a href="prompt_gen.html" class="underline hover:text-amber-300 font-semibold inline-flex items-center gap-1 transition-all">
+                Launch Generator <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+        </div>
+        <div class="absolute inset-0 bg-white/5 skew-x-12 transform scale-150 pointer-events-none"></div>
+    </div>
+
+    <!-- MAIN HEADER NAVIGATION -->
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Info -->
+            <div class="flex items-center gap-3">
+                <div class="h-12 w-12 bg-blinn-blue dark:bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-900/10 transition-transform hover:scale-105">
+                    <i class="fa-solid fa-cloud-sun-rain text-2xl"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-amber-600 dark:text-amber-400 tracking-wider uppercase">Blinn College</span>
+                        <span class="text-slate-300 dark:text-slate-700">|</span>
+                        <span class="text-xs font-medium text-slate-500 dark:text-slate-400">CIT Department</span>
+                    </div>
+                    <h1 class="text-lg md:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">ITNW 1336 <span class="font-normal text-slate-500 dark:text-slate-400">/ Cloud Architecting</span></h1>
+                </div>
+            </div>
+
+            <!-- Quick Navigation Controls -->
+            <div class="flex items-center gap-4">
+                <nav class="hidden md:flex items-center gap-1">
+                    <a href="#overview" class="px-3 py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-blinn-blue dark:text-slate-300 dark:hover:text-white transition-all">Overview</a>
+                    <a href="#modules" class="px-3 py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-blinn-blue dark:text-slate-300 dark:hover:text-white transition-all">Curriculum</a>
+                    <a href="#simulator" class="px-3 py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-blinn-blue dark:text-slate-300 dark:hover:text-white transition-all">Sandbox Sim</a>
+                    <a href="#tracker" class="px-3 py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-blinn-blue dark:text-slate-300 dark:hover:text-white transition-all">My Tracker</a>
+                </nav>
+
+                <!-- Divider -->
+                <span class="h-6 w-px bg-slate-200 dark:bg-slate-800 hidden md:inline"></span>
+
+                <!-- Mode Toggle -->
+                <button id="themeToggle" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all" aria-label="Toggle Dark Mode">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:block"></i>
+                </button>
+
+                <!-- Core Resource Action -->
+                <a href="prompt_gen.html" class="relative group inline-flex items-center justify-center px-4 py-2 text-sm font-bold text-white rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20 hover:shadow-lg transition-all transform hover:-translate-y-0.5">
+                    <span class="flex items-center gap-1.5">
+                        <i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i>
+                        Prompt Generator
+                    </span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN BODY CONTENT -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+        <!-- HERO INTRO SECTION -->
+        <section id="overview" class="mb-12">
+            <div class="relative rounded-3xl bg-slate-900 text-white overflow-hidden shadow-2xl">
+                <!-- Background Decoration -->
+                <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <div class="absolute -right-20 -top-20 w-80 h-80 bg-blue-600/20 rounded-full blur-3xl"></div>
+                <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl"></div>
+
+                <div class="relative z-10 px-6 py-10 md:p-12 lg:p-16 flex flex-col lg:flex-row items-center gap-10">
+                    <div class="flex-1 space-y-6">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold">
+                            <i class="fa-solid fa-graduation-cap"></i> AWS Academy Cloud Architecting
+                        </div>
+                        <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight leading-none text-white">
+                            Master AWS Infrastructure Design
+                        </h2>
+                        <p class="text-slate-300 text-base md:text-lg max-w-2xl leading-relaxed">
+                            Welcome to the student hub for <strong class="text-amber-400">ITNW 1336</strong>. Discover cloud components, automate architectures, design resilient serverless systems, and prepare directly for the <strong class="text-white">AWS Certified Solutions Architect – Associate (SAA-C03)</strong> certification.
+                        </p>
+                        <div class="flex flex-wrap gap-4 pt-2">
+                            <a href="#modules" class="px-5 py-3 text-sm font-semibold rounded-xl bg-white text-slate-900 hover:bg-slate-100 transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-book-open"></i> Explore Modules
+                            </a>
+                            <a href="#simulator" class="px-5 py-3 text-sm font-semibold rounded-xl bg-slate-800/80 text-white border border-slate-700 hover:bg-slate-700 transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-gamepad"></i> Try Sandbox Sim
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Highlight Tool Showcase: Prompt Generator Link Card -->
+                    <div class="w-full lg:w-[380px] bg-gradient-to-b from-slate-800 to-slate-900/90 rounded-2xl border border-slate-700 p-6 shadow-xl transition-all hover:border-blue-500 group relative">
+                        <div class="absolute -top-3 -right-3 bg-amber-500 text-slate-950 text-[10px] font-extrabold px-3 py-1 rounded-full shadow-lg flex items-center gap-1 uppercase">
+                            <i class="fa-solid fa-fire text-[9px]"></i> Recommended
+                        </div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="h-10 w-10 rounded-lg bg-gradient-to-tr from-amber-500 to-orange-400 flex items-center justify-center text-slate-950 font-bold shadow-md shadow-amber-500/20">
+                                <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-extrabold text-white text-base">Interactive Prompt Generator</h3>
+                                <p class="text-xs text-slate-400">Syllabus-aligned study assistant</p>
+                            </div>
+                        </div>
+                        <p class="text-slate-300 text-xs leading-relaxed mb-6">
+                            Dynamically generate tailored instructional and study prompts optimized for GPT-4o, Claude, or Gemini. Deeply synced with our AWS Architecting modules. Perfect for pretests, review quizzes, and ADA compliance checklists.
+                        </p>
+                        <a href="prompt_gen.html" class="w-full py-2.5 px-4 text-center block text-xs font-bold text-slate-950 bg-gradient-to-r from-amber-400 to-yellow-300 hover:from-amber-500 hover:to-yellow-400 rounded-xl transition-all shadow-md hover:shadow-amber-400/15 transform group-hover:scale-[1.02]">
+                            Launch Study Assistant <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATS / FAST REQUISITES PANEL -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4 transition-transform hover:scale-[1.01]">
+                <div class="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blinn-blue dark:text-blue-400 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <div>
+                    <span class="block text-xs text-slate-400 dark:text-slate-500 font-medium">Curriculum</span>
+                    <span class="block text-sm md:text-base font-bold text-slate-800 dark:text-white">17 AWS Modules</span>
+                </div>
+            </div>
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4 transition-transform hover:scale-[1.01]">
+                <div class="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-flask"></i>
+                </div>
+                <div>
+                    <span class="block text-xs text-slate-400 dark:text-slate-500 font-medium">Hands-On Practice</span>
+                    <span class="block text-sm md:text-base font-bold text-slate-800 dark:text-white">AWS Sandbox Labs</span>
+                </div>
+            </div>
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4 transition-transform hover:scale-[1.01]">
+                <div class="h-10 w-10 rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                <div>
+                    <span class="block text-xs text-slate-400 dark:text-slate-500 font-medium">Goal Certification</span>
+                    <span class="block text-sm md:text-base font-bold text-slate-800 dark:text-white">AWS SAA-C03</span>
+                </div>
+            </div>
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4 transition-transform hover:scale-[1.01]">
+                <div class="h-10 w-10 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-percent"></i>
+                </div>
+                <div>
+                    <span class="block text-xs text-slate-400 dark:text-slate-500 font-medium">Passing Grade</span>
+                    <span class="block text-sm md:text-base font-bold text-slate-800 dark:text-white">Min. 70% Overalls</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- MAIN LAYOUT GRID -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start mb-12">
+            
+            <!-- LEFT COLUMN: MODULE EXPLORER (Takes 2 columns in large screen) -->
+            <div class="lg:col-span-2 space-y-6" id="modules">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-cubes text-blue-500"></i> Course Modules & Syllabus
+                        </h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm">Search and explore slides, lab content, and topics for the AWS Academy curriculum</p>
+                    </div>
+                    <!-- Search Input -->
+                    <div class="relative max-w-xs w-full">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="moduleSearch" placeholder="Search S3, VPC, IAM..." class="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 shadow-sm transition-all">
+                    </div>
+                </div>
+
+                <!-- Modules Dynamic Accordion / Card Container -->
+                <div id="modulesContainer" class="space-y-4">
+                    <!-- Loaded dynamically via JavaScript -->
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: INTERACTIVE TOOLS & SIMULATOR (Takes 1 column) -->
+            <div class="space-y-8 lg:sticky lg:top-24">
+                
+                <!-- TOOL 1: INTEGRATION BOX FOR PROMPT_GEN.HTML -->
+                <div class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-xs font-bold mb-3">
+                            <i class="fa-solid fa-star"></i> Student Companion Tool
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Prompt Engineering for SAA-C03</h4>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-4">
+                            We've built an integration to automatically align our course syllabus with LLM prompt design. Launching this customized file allows you to quickly query questions, set up mock exams, construct interactive flashcards, or create code snippets based directly on the instructor decks.
+                        </p>
+                    </div>
+                    <div class="space-y-2">
+                        <a href="prompt_gen.html" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all shadow-sm">
+                            Open Prompt Generator <i class="fa-solid fa-rocket"></i>
+                        </a>
+                        <div class="p-2.5 bg-slate-50 dark:bg-slate-900/60 rounded-lg text-[11px] text-slate-400 dark:text-slate-500 text-center">
+                            Recommended files are stored on same domain context.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOOL 2: QUICK LINKS & CONTACT -->
+                <div class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 shadow-sm">
+                    <h4 class="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-link text-blue-500"></i> Essential Course Links
+                    </h4>
+                    <div class="space-y-2.5">
+                        <a href="https://awsacademy.instructure.com" target="_blank" class="flex items-center justify-between p-3 rounded-xl border border-slate-100 dark:border-slate-900 hover:border-slate-200 dark:hover:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-all group">
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-graduation-cap text-slate-400 group-hover:text-amber-500"></i>
+                                <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">AWS Academy Portal</span>
+                            </div>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+                        </a>
+                        <a href="https://aws.amazon.com/console/" target="_blank" class="flex items-center justify-between p-3 rounded-xl border border-slate-100 dark:border-slate-900 hover:border-slate-200 dark:hover:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-all group">
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-brands fa-aws text-orange-500 text-sm"></i>
+                                <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">AWS Management Console</span>
+                            </div>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+                        </a>
+                        <a href="https://www.blinn.edu" target="_blank" class="flex items-center justify-between p-3 rounded-xl border border-slate-100 dark:border-slate-900 hover:border-slate-200 dark:hover:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-all group">
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-building-columns text-slate-400 group-hover:text-blue-500"></i>
+                                <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Blinn College Website</span>
+                            </div>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- TOOL 3: MINI ARCHITECTING CHECKLIST -->
+                <div class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 shadow-sm" id="checklist">
+                    <h4 class="text-base font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-check-double text-blue-500"></i> Cert Ready Milestones
+                    </h4>
+                    <p class="text-xs text-slate-400 dark:text-slate-500 mb-4">Complete these course objectives before scheduling your AWS exam.</p>
+                    <div class="space-y-3" id="checklistContainer">
+                        <!-- Loaded dynamically and tracks state -->
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- SECTION: AWS ARCHITECTURE SANDBOX GAME (Highly Interactive Component) -->
+        <section id="simulator" class="mb-12">
+            <div class="p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 shadow-xl overflow-hidden relative">
+                <!-- Sandbox Accent -->
+                <div class="absolute -right-16 -bottom-16 w-48 h-48 bg-amber-500/5 rounded-full blur-2xl"></div>
+
+                <div class="flex flex-col lg:flex-row items-start justify-between gap-8 mb-6">
+                    <div>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs font-bold mb-2">
+                            <i class="fa-solid fa-vial-circle-check"></i> AWS Lab Simulation Game
+                        </span>
+                        <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">AWS Architecture Matcher</h3>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Test your ITNW 1336 skills! Assemble an optimized architecture to fulfill the scenario.</p>
+                    </div>
+
+                    <!-- Simulator Score Tracker -->
+                    <div class="flex items-center gap-4 bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-150 dark:border-slate-800">
+                        <div class="text-center px-2 border-r border-slate-200 dark:border-slate-800">
+                            <span class="block text-[10px] text-slate-400 uppercase font-bold tracking-wider">Scenario</span>
+                            <span id="simCurrentNum" class="block font-black text-lg text-slate-800 dark:text-white">1/3</span>
+                        </div>
+                        <div class="text-center px-2">
+                            <span class="block text-[10px] text-slate-400 uppercase font-bold tracking-wider">Score</span>
+                            <span id="simScore" class="block font-black text-lg text-emerald-600 dark:text-emerald-400">0 pts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scenario Card -->
+                <div class="p-5 rounded-2xl bg-slate-900 text-white mb-6 border border-slate-800">
+                    <span class="text-xs text-amber-400 font-bold uppercase tracking-wider block mb-1">Target Scenario Requirements</span>
+                    <h4 id="simScenarioTitle" class="text-base md:text-lg font-bold text-white mb-1">Cafe Dynamic High Availability Website</h4>
+                    <p id="simScenarioDesc" class="text-xs text-slate-300 leading-relaxed max-w-4xl">Needs elastic computing that scales up automatically during demand, robust relational database queries, high speed CDN cached assets, and structured safe secure domain configuration.</p>
+                </div>
+
+                <!-- Game Grid Arena -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    
+                    <!-- LEFT ARCHITECTURE CANVAS (Slot fillers) -->
+                    <div class="lg:col-span-7 space-y-4">
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+                            <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-3">Architectural Flow Map</span>
+                            
+                            <div class="flex flex-col md:flex-row items-stretch justify-between gap-3 text-center">
+                                <!-- SLOT 1: Entry DNS -->
+                                <div class="flex-1 p-3.5 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 relative group flex flex-col justify-center min-h-[90px]" data-slot="dns">
+                                    <span class="block text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase mb-1">1. DNS Resolver</span>
+                                    <div class="slot-content text-xs font-semibold text-slate-300 dark:text-slate-600">Empty Slot</div>
+                                </div>
+                                
+                                <div class="hidden md:flex items-center justify-center text-slate-300 dark:text-slate-700">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+
+                                <!-- SLOT 2: Cache CDN -->
+                                <div class="flex-1 p-3.5 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 relative group flex flex-col justify-center min-h-[90px]" data-slot="cdn">
+                                    <span class="block text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase mb-1">2. Content Delivery</span>
+                                    <div class="slot-content text-xs font-semibold text-slate-300 dark:text-slate-600">Empty Slot</div>
+                                </div>
+
+                                <div class="hidden md:flex items-center justify-center text-slate-300 dark:text-slate-700">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+
+                                <!-- SLOT 3: Compute -->
+                                <div class="flex-1 p-3.5 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 relative group flex flex-col justify-center min-h-[90px]" data-slot="compute">
+                                    <span class="block text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase mb-1">3. Compute / App</span>
+                                    <div class="slot-content text-xs font-semibold text-slate-300 dark:text-slate-600">Empty Slot</div>
+                                </div>
+
+                                <div class="hidden md:flex items-center justify-center text-slate-300 dark:text-slate-700">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+
+                                <!-- SLOT 4: Database -->
+                                <div class="flex-1 p-3.5 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 relative group flex flex-col justify-center min-h-[90px]" data-slot="database">
+                                    <span class="block text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase mb-1">4. Database Layer</span>
+                                    <div class="slot-content text-xs font-semibold text-slate-300 dark:text-slate-600">Empty Slot</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- User Feedback Log -->
+                        <div id="simLog" class="p-3 text-xs rounded-xl bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50 flex items-center gap-2">
+                            <i class="fa-solid fa-info-circle"></i> Click matching services on the right to slot them into your cloud layout!
+                        </div>
+                    </div>
+
+                    <!-- RIGHT CHIP SELECTORS -->
+                    <div class="lg:col-span-5">
+                        <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-3">Available Services (Click to assign)</span>
+                        <div id="simChips" class="grid grid-cols-2 gap-2">
+                            <!-- Loaded Dynamically based on current scenario requirements -->
+                        </div>
+
+                        <!-- Reset / Validate Controls -->
+                        <div class="flex gap-2 mt-4">
+                            <button id="simClearBtn" class="flex-1 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+                                Clear Map
+                            </button>
+                            <button id="simSubmitBtn" class="flex-1 py-2 text-xs font-bold rounded-xl text-white bg-emerald-600 hover:bg-emerald-700 transition-all shadow-md shadow-emerald-500/10">
+                                Check Blueprint
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION: AWS USER PROGRESS TRACKER (ITNW 1336 Checkpoints) -->
+        <section id="tracker" class="mb-12">
+            <div class="p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 shadow-md">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-blue-500"></i> My Semester Progress Tracker
+                        </h3>
+                        <p class="text-xs text-slate-400 dark:text-slate-500">Track labs, quizzes, and objectives as you complete them throughout Blinn's semester.</p>
+                    </div>
+                    <button id="resetTrackerBtn" class="px-3 py-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/20 rounded-lg transition-all border border-rose-200 dark:border-rose-900">
+                        Reset Tracker Data
+                    </button>
+                </div>
+
+                <!-- Master Progress Metrics bar -->
+                <div class="mb-6 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-6">
+                    <div class="flex-grow w-full">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Total Course Accomplishments</span>
+                            <span id="trackerPercent" class="text-xs font-black text-blue-600 dark:text-blue-400">0%</span>
+                        </div>
+                        <div class="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div id="trackerProgressBar" class="h-full bg-gradient-to-r from-blue-600 to-emerald-500 transition-all duration-500 w-0"></div>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0 flex items-center gap-4">
+                        <div class="text-center">
+                            <span id="trackerCheckedCount" class="block font-black text-2xl text-slate-800 dark:text-white">0</span>
+                            <span class="text-[10px] text-slate-400 uppercase font-semibold">Ticked Off</span>
+                        </div>
+                        <span class="text-2xl text-slate-200 dark:text-slate-700">/</span>
+                        <div class="text-center">
+                            <span id="trackerTotalCount" class="block font-black text-2xl text-slate-800 dark:text-white">0</span>
+                            <span class="text-[10px] text-slate-400 uppercase font-semibold">Total Steps</span>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-xs text-slate-400 dark:text-slate-500 text-center italic">
+                    Note: Your study progress is automatically stored safely in your current browser cache session.
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ACCESSIBILITY NOTIFICATION OVERLAY -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300 ease-out p-4 rounded-xl shadow-xl border text-white max-w-sm flex items-center gap-3 bg-slate-900 border-slate-800 dark:bg-white dark:text-slate-900 dark:border-slate-100">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-500 text-lg"></i>
+        <div class="flex-1">
+            <span id="toastMsg" class="text-xs font-semibold block">Copy Complete!</span>
+        </div>
+    </div>
+
+    <!-- MAIN PORTAL FOOTER -->
+    <footer class="bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-900 py-12 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div class="md:col-span-2 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="h-10 w-10 bg-blinn-blue rounded-lg flex items-center justify-center text-white text-lg">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <span class="block text-xs text-slate-400 font-bold tracking-wider uppercase">Blinn College CIT Department</span>
+                            <h4 class="text-base font-black text-slate-900 dark:text-white">ITNW 1336 Website</h4>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 dark:text-slate-500 max-w-sm leading-relaxed">
+                        This web portal has been constructed in strict compliance with AWS Academy requirements to elevate learner competency inside virtual networking architectures and SAA-C03 readiness guidelines.
+                    </p>
+                </div>
+                <div>
+                    <h5 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Study Resources</h5>
+                    <ul class="space-y-2 text-xs font-medium">
+                        <li><a href="prompt_gen.html" class="text-slate-500 hover:text-blue-500 dark:text-slate-400 dark:hover:text-white transition-colors">Prompt Generator</a></li>
+                        <li><a href="#simulator" class="text-slate-500 hover:text-blue-500 dark:text-slate-400 dark:hover:text-white transition-colors">Architect Matcher Game</a></li>
+                        <li><a href="#modules" class="text-slate-500 hover:text-blue-500 dark:text-slate-400 dark:hover:text-white transition-colors">Syllabus Overview</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Support & Feedback</h5>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-2">Have a question or encounter a bug within our portal resources?</p>
+                    <a href="https://support.aws.amazon.com/#/contacts/aws-academy" target="_blank" class="text-xs font-bold text-blue-500 hover:underline">
+                        AWS Academy Support <i class="fa-solid fa-arrow-up-right-from-square text-[9px] ml-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-slate-100 dark:border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <span class="text-xs text-slate-400 dark:text-slate-500">
+                    &copy; 2026 Blinn College. Computer Information Technology Department. All rights reserved.
+                </span>
+                <span class="text-[10px] text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-900 px-3 py-1 rounded-full border border-slate-150 dark:border-slate-800">
+                    Version 3.4.1 (AWS Academy SAA-C03)
+                </span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE SCRIPTS -->
+    <script>
+        // Core AWS Academy Course syllabus dataset directly parsed from deck outlines
+        const modulesData = [
+            {
+                num: 1,
+                title: "Welcome & Course Overview",
+                desc: "Introduction to AWS Academy Cloud Architecting and the core Café business case scenario framework used during semester labs.",
+                labs: ["None (Orientation)"],
+                services: ["AWS Management Console", "AWS Academy Portal"],
+                category: "Introduction"
+            },
+            {
+                num: 2,
+                title: "Intro to Cloud Architecting",
+                desc: "Exploration of standard design patterns. Understanding structured physical/digital requirements mapping using the Well-Architected Framework pillars.",
+                labs: ["Cafe Business Case Setup"],
+                services: ["AWS Well-Architected Tool", "AWS Infrastructure Overview"],
+                category: "Architecting Core"
+            },
+            {
+                num: 3,
+                title: "Securing Access",
+                desc: "Designing secure access structures utilizing Identity and Access Management policies, role configurations, grouping rules, and MFA protection grids.",
+                labs: ["Guided Lab: AWS IAM Essentials"],
+                services: ["IAM", "IAM Policies & Roles", "MFA"],
+                category: "Security"
+            },
+            {
+                num: 4,
+                title: "Adding a Storage Layer",
+                desc: "S3 objects, buckets, unique resource identifiers, lifecycle policy automation, replication workflows, and static web page setups.",
+                labs: ["Challenge Lab: Creating a Static Website for the Café"],
+                services: ["Amazon S3", "S3 Glacier", "S3 Lifecycle Policies"],
+                category: "Storage"
+            },
+            {
+                num: 5,
+                title: "Adding a Compute Layer",
+                desc: "Configuring EC2 virtual servers, block dynamic storage volumes, Amazon Machine Images configurations, and shared storage using Amazon Elastic File System.",
+                labs: ["Challenge Lab: Creating a Dynamic Website for the Café"],
+                services: ["Amazon EC2", "Amazon EBS", "Amazon EFS", "AWS Systems Manager"],
+                category: "Compute"
+            },
+            {
+                num: 6,
+                title: "Adding a Database Layer",
+                desc: "Comparing relational engines against NoSQL document storage models. Establishing Amazon RDS instances on multi-AZ configurations for resilient data storage.",
+                labs: ["Guided Lab: Creating an Amazon RDS Database"],
+                services: ["Amazon RDS", "Amazon DynamoDB", "Amazon DocumentDB"],
+                category: "Database"
+            },
+            {
+                num: 7,
+                title: "Creating a Networking Environment",
+                desc: "Virtual Private Cloud engineering, public and private subnet mapping, routing protocols, and securing entry gates via Security Groups and Network ACLs.",
+                labs: ["Guided Lab: Creating a Virtual Private Cloud (VPC)"],
+                services: ["Amazon VPC", "VPC Subnets", "Internet Gateways", "NAT Gateways"],
+                category: "Networking"
+            },
+            {
+                num: 8,
+                title: "Connecting Networks",
+                desc: "Expanding VPC limits to interconnect networks globally using transit gateway routing tables, VPC Peering architectures, Direct Connect, and site-to-site VPN overlays.",
+                labs: ["VPC Peering Connections Lab"],
+                services: ["AWS Transit Gateway", "VPC Peering", "AWS Direct Connect", "AWS VPN"],
+                category: "Networking"
+            },
+            {
+                num: 9,
+                title: "Securing User, Application, and Data Access",
+                desc: "Safeguarding environments with multi-account AWS Organizations, control-tower structures, KMS data encryption, and Secrets Manager rotation.",
+                labs: ["Guided Lab: Securing Web Applications on AWS"],
+                services: ["AWS Organizations", "AWS KMS", "AWS Secrets Manager"],
+                category: "Security"
+            },
+            {
+                num: 10,
+                title: "Elasticity, High Availability, and Monitoring",
+                desc: "Elastic Load Balancer mapping, Auto Scaling core policy structures, Amazon Route 53 health routing, and Amazon CloudWatch metric logs.",
+                labs: ["Challenge Lab: Implementing a Highly Available Design"],
+                services: ["Application Load Balancer", "Auto Scaling", "Amazon Route 53", "Amazon CloudWatch"],
+                category: "Architecting Core"
+            },
+            {
+                num: 11,
+                title: "Automating Your Architecture",
+                desc: "Infrastructure as Code. Defining networks, computes, and relational databases securely inside reproducible CloudFormation templates.",
+                labs: ["Guided Lab: Automating Infrastructure Deployment with AWS CloudFormation"],
+                services: ["AWS CloudFormation", "AWS CodePipeline"],
+                category: "Automation"
+            },
+            {
+                num: 12,
+                title: "Caching Content",
+                desc: "Mitigating latency bottlenecks. Distributing global static cached media with Amazon CloudFront and deploying database in-memory ElastiCache nodes.",
+                labs: ["Guided Lab: Streaming Dynamic Content Using Amazon CloudFront"],
+                services: ["Amazon CloudFront", "Amazon ElastiCache"],
+                category: "Acceleration"
+            },
+            {
+                num: 13,
+                title: "Building Decoupled Architectures",
+                desc: "Loosely-coupled message structures. Utilizing SQS queues and SNS publish/subscribe alerts to isolate services against dynamic failure.",
+                labs: ["Guided Lab: Decoupling Applications on AWS"],
+                services: ["Amazon SQS", "Amazon SNS"],
+                category: "Architecture Patterns"
+            },
+            {
+                num: 14,
+                title: "Building Serverless Architectures & Microservices",
+                desc: "Eliminating server overhead. Microservices migration with Amazon Elastic Container Service (ECS), AWS Lambda triggers, and Amazon API Gateway HTTP endpoints.",
+                labs: ["Challenge Lab: Implementing a Serverless Architecture for the Café"],
+                services: ["AWS Lambda", "Amazon API Gateway", "Amazon ECS / Fargate"],
+                category: "Serverless"
+            },
+            {
+                num: 15,
+                title: "Data Engineering Patterns",
+                desc: "Big data storage pipelines. Ingesting, processing, and analyzing warehouse queries using Amazon Redshift, Amazon Athena, and AWS Glue.",
+                labs: ["Analytical Querying Setup"],
+                services: ["Amazon Redshift", "Amazon Athena", "AWS Glue", "Amazon QuickSight"],
+                category: "Big Data"
+            },
+            {
+                num: 16,
+                title: "Planning for Disaster",
+                desc: "DR architectures. Backup/Restore, Pilot Light recovery paths, Warm Standby failover grids, and automated Multi-site active routing configurations.",
+                labs: ["Disaster Recovery Strategy Review"],
+                services: ["AWS Backup", "Amazon Route 53 Failover", "AWS Storage Gateway"],
+                category: "Resilience"
+            },
+            {
+                num: 17,
+                title: "Bridging to Certification",
+                desc: "Reviewing SAA-C03 exam domains, timing strategies, question scenarios, and practice testing strategies for Solutions Architect success.",
+                labs: ["Practice Exams & Prep Tests"],
+                services: ["AWS Certification Program", "SAA-C03 Readiness Matrix"],
+                category: "Certification Prep"
+            }
+        ];
+
+        // Cert Readiness Milestones Definition
+        const milestones = [
+            { id: "m1", label: "Read through Course Syllabus and schedule AWS Academy account details" },
+            { id: "m2", label: "Complete Café S3 Static Website deployment challenge" },
+            { id: "m3", label: "Construct the Café EC2 dynamic auto-scaling environment" },
+            { id: "m4", label: "Successfully launch CloudFormation templates in AWS environments" },
+            { id: "m5", label: "Complete all 17 AWS Academy Knowledge Check modules with 80%+" },
+            { id: "m6", label: "Pass ITNW 1336 Semester Midterm and Final exams successfully" }
+        ];
+
+        // Architect game configurations
+        const scenarios = [
+            {
+                id: 1,
+                title: "High Performance Cached Café Web App",
+                desc: "Deliver high-availability computation, routing via Route 53, static file distribution from a caching CDN edge, and dynamic transactional storage queries in standard SQL.",
+                correct: {
+                    dns: "Amazon Route 53",
+                    cdn: "Amazon CloudFront",
+                    compute: "Amazon EC2",
+                    database: "Amazon RDS"
+                }
+            },
+            {
+                id: 2,
+                title: "Decoupled Serverless Ordering Pipeline",
+                desc: "Eliminate underlying server overhead. Clients execute static requests mapped over safe routing. Orders enter a high speed message queue queueing process, triggering micro-computes that update non-relational key-value tables.",
+                correct: {
+                    dns: "Amazon Route 53",
+                    cdn: "Amazon SQS",
+                    compute: "AWS Lambda",
+                    database: "Amazon DynamoDB"
+                }
+            },
+            {
+                id: 3,
+                title: "Secure Isolated VPC Networking System",
+                desc: "Deploy resources inside secure subnets. Route public queries securely, isolate computing stacks behind network gateways, and store structured document databases.",
+                correct: {
+                    dns: "Amazon VPC",
+                    cdn: "NAT Gateways",
+                    compute: "Amazon EC2",
+                    database: "Amazon DocumentDB"
+                }
+            }
+        ];
+
+        // APP STATE
+        let activeScenarioIndex = 0;
+        let simSlots = { dns: null, cdn: null, compute: null, database: null };
+        let score = 0;
+        let checkedTrackerItems = {};
+
+        // INITIALIZE THEME CONTROL
+        function initTheme() {
+            const themeToggle = document.getElementById('themeToggle');
+            const isDark = localStorage.getItem('theme') === 'dark' || 
+                (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+
+            themeToggle.addEventListener('click', () => {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        }
+
+        // RENDER COURSE MODULES WITH FILTER/SEARCH ENGINE
+        function renderModules(searchTerm = "") {
+            const container = document.getElementById('modulesContainer');
+            container.innerHTML = "";
+
+            const normalizedSearch = searchTerm.toLowerCase().trim();
+            const filtered = modulesData.filter(m => {
+                const searchInTitle = m.title.toLowerCase().includes(normalizedSearch);
+                const searchInDesc = m.desc.toLowerCase().includes(normalizedSearch);
+                const searchInServices = m.services.some(s => s.toLowerCase().includes(normalizedSearch));
+                const searchInLabs = m.labs.some(l => l.toLowerCase().includes(normalizedSearch));
+                return searchInTitle || searchInDesc || searchInServices || searchInLabs;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="p-12 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-800/50">
+                        <i class="fa-solid fa-face-frown text-slate-400 text-3xl mb-3"></i>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-white">No syllabus topics found</h4>
+                        <p class="text-xs text-slate-400 mt-1">Try querying different keywords (e.g. S3, VPC, EC2, KMS)</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(m => {
+                const card = document.createElement('div');
+                card.className = "group border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-800 overflow-hidden transition-all duration-300 hover:shadow-md";
+                
+                // Construct list items for labs
+                const labItems = m.labs.map(l => `
+                    <div class="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 font-medium">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                        <span>${l}</span>
+                    </div>
+                `).join('');
+
+                // Construct list pills for services
+                const servicePills = m.services.map(s => `
+                    <span class="px-2 py-1 text-[10px] font-bold rounded-md bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/60 transition-colors hover:border-blue-400 dark:hover:border-blue-500">
+                        ${s}
+                    </span>
+                `).join('');
+
+                // Custom SVG or class icon based on module category
+                let moduleIcon = "fa-cloud";
+                if (m.category === "Security") moduleIcon = "fa-shield-halved";
+                if (m.category === "Compute") moduleIcon = "fa-microchip";
+                if (m.category === "Storage") moduleIcon = "fa-database";
+                if (m.category === "Database") moduleIcon = "fa-server";
+                if (m.category === "Networking") moduleIcon = "fa-network-wired";
+                if (m.category === "Automation") moduleIcon = "fa-gears";
+                if (m.category === "Certification Prep") moduleIcon = "fa-award";
+
+                card.innerHTML = `
+                    <!-- Header Bar -->
+                    <button class="w-full text-left p-5 flex items-center justify-between gap-4 focus:outline-none" onclick="toggleAccordion('acc-${m.num}')">
+                        <div class="flex items-center gap-4">
+                            <div class="h-10 w-10 flex-shrink-0 bg-blue-50 dark:bg-slate-900 group-hover:bg-blue-100 dark:group-hover:bg-slate-700 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center text-base transition-colors">
+                                <i class="fa-solid ${moduleIcon}"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-[10px] uppercase font-bold tracking-wider text-amber-600 dark:text-amber-400">Module ${m.num}</span>
+                                    <span class="text-slate-300 dark:text-slate-700 text-xs">|</span>
+                                    <span class="text-[10px] uppercase font-semibold text-slate-400 dark:text-slate-500">${m.category}</span>
+                                </div>
+                                <h4 class="text-sm font-extrabold text-slate-900 dark:text-white transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">${m.title}</h4>
+                            </div>
+                        </div>
+                        <div class="h-8 w-8 rounded-lg border border-slate-100 dark:border-slate-700 flex items-center justify-center text-slate-400 dark:text-slate-500 transition-transform duration-300" id="chevron-acc-${m.num}">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </button>
+                    
+                    <!-- Content Body -->
+                    <div id="acc-${m.num}" class="hidden border-t border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-900/10 p-5 space-y-4">
+                        <div>
+                            <span class="block text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-wider mb-1">Module Description</span>
+                            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${m.desc}</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                            <div>
+                                <span class="block text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-wider mb-2">Hands-on Lab Assignments</span>
+                                <div class="space-y-1">${labItems}</div>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-wider mb-2">Architecting Tool & Services Highlighted</span>
+                                <div class="flex flex-wrap gap-1.5">${servicePills}</div>
+                            </div>
+                        </div>
+
+                        <!-- Completion Checkbox Integration linked directly to study tracker -->
+                        <div class="pt-3 border-t border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 h-4 w-4" onchange="toggleMilestone('mod-${m.num}', this.checked)" ${checkedTrackerItems['mod-'+m.num] ? 'checked' : ''}>
+                                <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase">Mark Module Completed</span>
+                            </label>
+                            
+                            <!-- Prompt helper action hook -->
+                            <a href="prompt_gen.html" class="inline-flex items-center gap-1 text-[11px] font-bold text-blue-500 hover:text-blue-600 hover:underline">
+                                Explore prompts for this module <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // TOGGLE ACCORDION PANEL ACCESSIBILITY
+        function toggleAccordion(id) {
+            const panel = document.getElementById(id);
+            const chevron = document.getElementById(`chevron-${id}`);
+            
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+            } else {
+                panel.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
+            }
+        }
+
+        // CONSTRUCT INTUITIVE REUSABLE STUDY TRACKER ELEMENTS
+        function renderTracker() {
+            // Checklist milestones (m1 to m6)
+            const checklistContainer = document.getElementById('checklistContainer');
+            checklistContainer.innerHTML = "";
+
+            milestones.forEach(m => {
+                const item = document.createElement('div');
+                item.className = "flex items-start gap-3 p-2 hover:bg-slate-50 dark:hover:bg-slate-900/50 rounded-xl transition-colors";
+                item.innerHTML = `
+                    <input type="checkbox" id="${m.id}" class="mt-1 rounded border-slate-300 text-blue-600 focus:ring-blue-500 h-4 w-4 cursor-pointer" onchange="toggleMilestone('${m.id}', this.checked)" ${checkedTrackerItems[m.id] ? 'checked' : ''}>
+                    <label for="${m.id}" class="text-xs font-semibold text-slate-700 dark:text-slate-300 leading-tight cursor-pointer select-none">
+                        ${m.label}
+                    </label>
+                `;
+                checklistContainer.appendChild(item);
+            });
+
+            updateProgressMetrics();
+        }
+
+        // SYNC TOGGLES WITH BROWSER MEMORY (LOCALSTORAGE)
+        function toggleMilestone(id, isChecked) {
+            if (isChecked) {
+                checkedTrackerItems[id] = true;
+            } else {
+                delete checkedTrackerItems[id];
+            }
+            localStorage.setItem('itnw_1336_tracker', JSON.stringify(checkedTrackerItems));
+            
+            // Sync with visual controls in other components
+            const correspondingCheck = document.querySelector(`input[onchange*="'${id}'"]`);
+            if (correspondingCheck) correspondingCheck.checked = isChecked;
+
+            const listCheck = document.getElementById(id);
+            if (listCheck) listCheck.checked = isChecked;
+
+            updateProgressMetrics();
+        }
+
+        function updateProgressMetrics() {
+            // Count modules (mod-1 to mod-17) + checkpoints (m1 to m6)
+            const totalItems = modulesData.length + milestones.length;
+            const checkedCount = Object.keys(checkedTrackerItems).length;
+            
+            const percent = totalItems > 0 ? Math.round((checkedCount / totalItems) * 100) : 0;
+
+            document.getElementById('trackerPercent').innerText = `${percent}%`;
+            document.getElementById('trackerCheckedCount').innerText = checkedCount;
+            document.getElementById('trackerTotalCount').innerText = totalItems;
+            
+            const progressBar = document.getElementById('trackerProgressBar');
+            progressBar.style.width = `${percent}%`;
+        }
+
+        // LOAD SAVED STUDY PORTAL MEMORY
+        function loadTrackerState() {
+            const saved = localStorage.getItem('itnw_1336_tracker');
+            if (saved) {
+                try {
+                    checkedTrackerItems = JSON.parse(saved);
+                } catch (e) {
+                    checkedTrackerItems = {};
+                }
+            } else {
+                checkedTrackerItems = {};
+            }
+        }
+
+        // RESET MASTER PROGRESS BUTTON
+        function setupResetTracker() {
+            document.getElementById('resetTrackerBtn').addEventListener('click', () => {
+                checkedTrackerItems = {};
+                localStorage.removeItem('itnw_1336_tracker');
+                showToast("Tracker progress successfully reset!", "fa-circle-xmark");
+                renderModules();
+                renderTracker();
+            });
+        }
+
+        // AWS ARCHITECTURE MATCHING GAME SIMULATOR
+        function loadSimulatorGame() {
+            const sc = scenarios[activeScenarioIndex];
+            
+            // Set Titles
+            document.getElementById('simCurrentNum').innerText = `${activeScenarioIndex + 1}/${scenarios.length}`;
+            document.getElementById('simScenarioTitle').innerText = sc.title;
+            document.getElementById('simScenarioDesc').innerText = sc.desc;
+
+            // Clear state
+            simSlots = { dns: null, cdn: null, compute: null, database: null };
+            updateSlotRender();
+
+            // Populate multi-tier design chips dynamically with decoy options
+            const correctServices = Object.values(sc.correct);
+            const dynamicDecoys = [
+                "Amazon S3", "AWS Identity and Access Management", "Amazon EBS", 
+                "AWS Systems Manager", "NAT Gateways", "AWS Shield", "Amazon Redshift"
+            ];
+
+            // Mix correct answers with 4 unique randomized decoys
+            let availableSelection = [...correctServices];
+            let addedDecoys = 0;
+            for (let i = 0; i < dynamicDecoys.length; i++) {
+                if (!correctServices.includes(dynamicDecoys[i]) && addedDecoys < 4) {
+                    availableSelection.push(dynamicDecoys[i]);
+                    addedDecoys++;
+                }
+            }
+
+            // Shuffle chip items randomly
+            availableSelection.sort(() => Math.random() - 0.5);
+
+            const chipContainer = document.getElementById('simChips');
+            chipContainer.innerHTML = "";
+            availableSelection.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = "p-2.5 rounded-xl text-xs font-semibold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-center hover:border-blue-500 dark:hover:border-blue-400 transition-all hover:scale-[1.01]";
+                btn.innerText = item;
+                btn.onclick = () => assignToNextAvailableSlot(item);
+                chipContainer.appendChild(btn);
+            });
+        }
+
+        // HELPER ASSIGNMENT CONTROL FOR SIM CHIPS
+        function assignToNextAvailableSlot(serviceName) {
+            // Find next available slot inside state
+            let targetedKey = null;
+            if (!simSlots.dns) targetedKey = 'dns';
+            else if (!simSlots.cdn) targetedKey = 'cdn';
+            else if (!simSlots.compute) targetedKey = 'compute';
+            else if (!simSlots.database) targetedKey = 'database';
+
+            if (targetedKey) {
+                simSlots[targetedKey] = serviceName;
+                updateSlotRender();
+                showLogMessage(`Assigned "${serviceName}" to slot: ${targetedKey.toUpperCase()}`, "text-blue-600 dark:text-blue-400");
+            } else {
+                showLogMessage("All diagram slots are currently full! Clear mapping to design again.", "text-amber-500");
+            }
+        }
+
+        function updateSlotRender() {
+            // Iterate slots and render them
+            const slots = ['dns', 'cdn', 'compute', 'database'];
+            slots.forEach(s => {
+                const domSlot = document.querySelector(`[data-slot="${s}"]`);
+                const contentDiv = domSlot.querySelector('.slot-content');
+                
+                if (simSlots[s]) {
+                    domSlot.classList.remove('border-dashed', 'border-slate-300', 'dark:border-slate-700');
+                    domSlot.classList.add('border-solid', 'border-blue-500', 'dark:border-blue-400', 'bg-blue-50/20');
+                    contentDiv.innerHTML = `
+                        <span class="block text-xs font-bold text-slate-900 dark:text-white">${simSlots[s]}</span>
+                        <button class="absolute top-1.5 right-1.5 text-[10px] text-rose-500 hover:text-rose-600 focus:outline-none" onclick="clearSlot('${s}', event)">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
+                    `;
+                } else {
+                    domSlot.classList.add('border-dashed', 'border-slate-300', 'dark:border-slate-700');
+                    domSlot.classList.remove('border-solid', 'border-blue-500', 'dark:border-blue-400', 'bg-blue-50/20');
+                    contentDiv.innerHTML = `<span class="text-xs text-slate-300 dark:text-slate-600 font-semibold">Empty Slot</span>`;
+                }
+            });
+        }
+
+        window.clearSlot = function(slotKey, event) {
+            if (event) event.stopPropagation();
+            simSlots[slotKey] = null;
+            updateSlotRender();
+            showLogMessage(`Cleared ${slotKey.toUpperCase()} slot configuration.`, "text-slate-500");
+        };
+
+        function showLogMessage(text, colorClass = "text-slate-500") {
+            const log = document.getElementById('simLog');
+            log.innerHTML = `<i class="fa-solid fa-info-circle"></i> <span class="${colorClass}">${text}</span>`;
+        }
+
+        // VALIDATION PROCESSOR FOR BLUEPRINT DESIGNS
+        function setupGameControls() {
+            // Clear Sandbox
+            document.getElementById('simClearBtn').addEventListener('click', () => {
+                simSlots = { dns: null, cdn: null, compute: null, database: null };
+                updateSlotRender();
+                showLogMessage("Gameboard design cleared! Construct your plan.", "text-slate-400");
+            });
+
+            // Validate blueprint
+            document.getElementById('simSubmitBtn').addEventListener('click', () => {
+                const sc = scenarios[activeScenarioIndex];
+                
+                // Confirm all filled
+                if (!simSlots.dns || !simSlots.cdn || !simSlots.compute || !simSlots.database) {
+                    showLogMessage("Failed: Please fill out all 4 architectural slot sectors to check!", "text-rose-500 font-bold animate-shake");
+                    return;
+                }
+
+                // Match verification
+                let correctCount = 0;
+                if (simSlots.dns === sc.correct.dns) correctCount++;
+                if (simSlots.cdn === sc.correct.cdn) correctCount++;
+                if (simSlots.compute === sc.correct.compute) correctCount++;
+                if (simSlots.database === sc.correct.database) correctCount++;
+
+                if (correctCount === 4) {
+                    score += 100;
+                    document.getElementById('simScore').innerText = `${score} pts`;
+                    showLogMessage(`Awesome! 4/4 Perfect match. Scenario correctly built! (+100 XP)`, "text-emerald-500 font-bold");
+                    showToast("Architectural Blueprint Approved!", "fa-circle-check");
+                    
+                    // Proceed to next scenario after timeout delay
+                    setTimeout(() => {
+                        activeScenarioIndex = (activeScenarioIndex + 1) % scenarios.length;
+                        loadSimulatorGame();
+                        showLogMessage("Loaded next AWS scenario blueprint. Design your solution!");
+                    }, 2800);
+
+                } else {
+                    showLogMessage(`Design Rejected: ${correctCount}/4 Slots correct. Check well-architected layers and retry.`, "text-rose-500 font-semibold");
+                }
+            });
+        }
+
+        // NOTIFICATION TOAST POPUP
+        function showToast(msg, icon = "fa-circle-check") {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toastIcon');
+            const toastMsg = document.getElementById('toastMsg');
+
+            toastMsg.innerText = msg;
+            toastIcon.className = `fa-solid ${icon} text-lg text-emerald-500`;
+            if (icon.includes('xmark')) {
+                toastIcon.className = `fa-solid ${icon} text-lg text-rose-500`;
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+            }, 3000);
+        }
+
+        // SEARCH INPUT FILTER INTEGRATION
+        function setupSearchFilter() {
+            const search = document.getElementById('moduleSearch');
+            search.addEventListener('input', (e) => {
+                renderModules(e.target.value);
+            });
+        }
+
+        // BOOTSTRAP INITIALIZERS ON WINDOW LOAD
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadTrackerState();
+            renderModules();
+            renderTracker();
+            setupResetTracker();
+            loadSimulatorGame();
+            setupGameControls();
+            setupSearchFilter();
+        });
+    </script>
+</body>
+</html>
