@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 03: Securing Access - Interactive AWS IAM Masterclass</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        },
+                        darkBg: '#0f172a',
+                        darkCard: '#1e293b',
+                        darkText: '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Flashcard custom 3D flip styling */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .preserve-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        .card-flip-transition {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-darkBg dark:text-slate-100 transition-colors duration-300 min-h-screen font-sans flex flex-col">
+
+    <!-- Header Section -->
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-brand-600 rounded-lg text-white">
+                    <!-- SVG Key/Shield Icon -->
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">ITNW 1336: Cloud Architecting</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Blinn College &bull; CIT Department</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <!-- Module Badge -->
+                <span class="hidden md:inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300">
+                    Module 03: Securing Access
+                </span>
+                <!-- Theme Toggle Button -->
+                <button id="themeToggle" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all" aria-label="Toggle Dark Mode">
+                    <!-- Sun Icon (visible in Dark Mode) -->
+                    <svg id="sunIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707-.707m12.728 0l-.707.707M6.343 6.343l-.707-.707m2.828 9.9a5 5 0 117.072 0l-7.072 0z"></path>
+                    </svg>
+                    <!-- Moon Icon (visible in Light Mode) -->
+                    <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        <!-- Left Sidebar Sticky Navigation -->
+        <aside class="lg:col-span-1">
+            <div class="sticky top-24 space-y-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+                <h3 class="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Lesson Navigator</h3>
+                <nav class="space-y-1">
+                    <a href="#objectives" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white transition-all group">
+                        <span class="w-2 h-2 mr-3 rounded-full bg-blue-500"></span>
+                        Learning Objectives
+                    </a>
+                    <a href="#glossary" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white transition-all group">
+                        <span class="w-2 h-2 mr-3 rounded-full bg-emerald-500"></span>
+                        Key Terms Glossary
+                    </a>
+                    <a href="#analogy" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white transition-all group">
+                        <span class="w-2 h-2 mr-3 rounded-full bg-purple-500"></span>
+                        Headquarters Analogy
+                    </a>
+                    <a href="#lesson-content" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white transition-all group">
+                        <span class="w-2 h-2 mr-3 rounded-full bg-amber-500"></span>
+                        Main Content (IAM Rules)
+                    </a>
+                    <a href="#simulator" class="flex items-center px-3 py-2 text-sm font-semibold rounded-lg text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/20 group">
+                        <span class="w-2 h-2 mr-3 rounded-full bg-brand-600 animate-pulse"></span>
+                        Policy Evaluation Sandbox
+                    </a>
+                    <a href="#cafe-journey" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white transition-all group">
+                        <span class="w-2 h-2 mr-3 rounded-full bg-orange-500"></span>
+                        AWS Café Case Study
+                    </a>
+                    <a href="#knowledge-quiz" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white transition-all group">
+                        <span class="w-2 h-2 mr-3 rounded-full bg-rose-500"></span>
+                        Interactive Practice Quiz
+                    </a>
+                    <a href="#ada-checklist" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white transition-all group">
+                        <span class="w-2 h-2 mr-3 rounded-full bg-slate-500"></span>
+                        ADA Checklist
+                    </a>
+                </nav>
+
+                <div class="p-4 bg-brand-50 dark:bg-brand-900/10 rounded-xl border border-brand-200/50 dark:border-brand-800/30">
+                    <h4 class="text-xs font-bold text-brand-900 dark:text-brand-300 uppercase tracking-wider">Exam Alert (SAA-C03)</h4>
+                    <p class="text-xs text-brand-700 dark:text-brand-400 mt-1 leading-relaxed">
+                        AWS IAM accounts for up to **30% of Domain 1** (Design Secure Architectures). Master Policy evaluation rules and Role delegation!
+                    </p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Viewport -->
+        <main class="lg:col-span-3 space-y-12">
+
+            <!-- Section 1: Objectives (Bloom's Taxonomy Visual) -->
+            <section id="objectives" class="scroll-mt-24 bg-white dark:bg-slate-900 p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors space-y-6">
+                <div class="flex items-center space-x-3">
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 text-xs font-bold rounded-md">Objectives</span>
+                    <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Bloom's Taxonomy Taxonomy Goals</h2>
+                </div>
+                
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                    Identity controls form the security backbone of any AWS cloud deployment. Explore the hierarchical learning objectives configured below to target specific certification criteria:
+                </p>
+
+                <!-- Custom Bloom's Pyramid Interactive Graphic -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center bg-slate-50 dark:bg-slate-950 p-6 rounded-xl border border-slate-100 dark:border-slate-800">
+                    <div class="space-y-3">
+                        <div class="p-3 bg-indigo-600 text-white rounded-lg font-semibold flex justify-between items-center text-sm shadow-sm hover:scale-[1.01] transition-transform">
+                            <span>1. Evaluate</span>
+                            <span class="text-xs bg-indigo-700 px-2 py-0.5 rounded">Cross-Account Roles</span>
+                        </div>
+                        <div class="p-3 bg-blue-600 text-white rounded-lg font-semibold flex justify-between items-center text-sm shadow-sm hover:scale-[1.01] transition-transform">
+                            <span>2. Analyze</span>
+                            <span class="text-xs bg-blue-700 px-2 py-0.5 rounded">Multi-Policy Logic</span>
+                        </div>
+                        <div class="p-3 bg-sky-600 text-white rounded-lg font-semibold flex justify-between items-center text-sm shadow-sm hover:scale-[1.01] transition-transform">
+                            <span>3. Apply</span>
+                            <span class="text-xs bg-sky-700 px-2 py-0.5 rounded">JSON Custom Writing</span>
+                        </div>
+                        <div class="p-3 bg-teal-600 text-white rounded-lg font-semibold flex justify-between items-center text-sm shadow-sm hover:scale-[1.01] transition-transform">
+                            <span>4. Understand</span>
+                            <span class="text-xs bg-teal-700 px-2 py-0.5 rounded">Least Privilege Rules</span>
+                        </div>
+                    </div>
+                    <div class="text-sm space-y-3 text-slate-600 dark:text-slate-400">
+                        <p class="font-semibold text-slate-800 dark:text-white">Active Mastery Checkpoints:</p>
+                        <ul class="space-y-2 list-disc list-inside">
+                            <li><strong>Configure users, groups, and policies</strong> in correct semantic namespaces.</li>
+                            <li><strong>Stop hardcoding keys</strong> by injecting dynamically rotating credentials.</li>
+                            <li><strong>Enforce safe guardrails</strong> across multi-accounts using AWS Organization SCPs.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Interactive Flashcards Glossary -->
+            <section id="glossary" class="scroll-mt-24 space-y-6">
+                <div class="flex items-center space-x-3">
+                    <span class="px-3 py-1 bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs font-bold rounded-md">Glossary</span>
+                    <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Key Terms Flashcards</h2>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                    Click each interactive card below to flip it and reveal the technical definition and structural relationships.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 perspective-1000">
+                    
+                    <!-- Card 1 -->
+                    <div class="h-64 cursor-pointer relative preserve-3d card-flip-transition" onclick="this.classList.toggle('rotate-y-180')">
+                        <!-- Front View -->
+                        <div class="absolute inset-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-sm backface-hidden">
+                            <div class="space-y-2">
+                                <span class="text-xs font-bold text-emerald-600 tracking-wider uppercase">Flashcard 1</span>
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white">The Root User</h3>
+                            </div>
+                            <div class="flex justify-between items-center text-xs text-slate-400">
+                                <span>Click to flip</span>
+                                <svg class="w-4 h-4 text-emerald-500 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18"></path></svg>
+                            </div>
+                        </div>
+                        <!-- Back View -->
+                        <div class="absolute inset-0 bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800 rounded-2xl p-6 flex flex-col justify-between rotate-y-180 backface-hidden shadow-md">
+                            <p class="text-sm text-slate-700 dark:text-emerald-300 leading-relaxed">
+                                The single identity created on initial signup. Holds absolute, unrestrictive billing and deployment capabilities. **Critical SAA-C03 best practice**: Delete root API keys, enable MFA immediately, and create standard IAM users.
+                            </p>
+                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase">Answer</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="h-64 cursor-pointer relative preserve-3d card-flip-transition" onclick="this.classList.toggle('rotate-y-180')">
+                        <!-- Front View -->
+                        <div class="absolute inset-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-sm backface-hidden">
+                            <div class="space-y-2">
+                                <span class="text-xs font-bold text-emerald-600 tracking-wider uppercase">Flashcard 2</span>
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white">IAM User vs. Role</h3>
+                            </div>
+                            <div class="flex justify-between items-center text-xs text-slate-400">
+                                <span>Click to flip</span>
+                                <svg class="w-4 h-4 text-emerald-500 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18"></path></svg>
+                            </div>
+                        </div>
+                        <!-- Back View -->
+                        <div class="absolute inset-0 bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800 rounded-2xl p-6 flex flex-col justify-between rotate-y-180 backface-hidden shadow-md">
+                            <p class="text-sm text-slate-700 dark:text-emerald-300 leading-relaxed">
+                                An **IAM User** represents a persistent entity with long-term secrets (passwords, fixed access keys). An **IAM Role** has no persistent credentials; trusted operators dynamically assume roles to acquire short-lived keys through AWS STS.
+                            </p>
+                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase">Answer</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="h-64 cursor-pointer relative preserve-3d card-flip-transition" onclick="this.classList.toggle('rotate-y-180')">
+                        <!-- Front View -->
+                        <div class="absolute inset-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-sm backface-hidden">
+                            <div class="space-y-2">
+                                <span class="text-xs font-bold text-emerald-600 tracking-wider uppercase">Flashcard 3</span>
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white">IAM Group</h3>
+                            </div>
+                            <div class="flex justify-between items-center text-xs text-slate-400">
+                                <span>Click to flip</span>
+                                <svg class="w-4 h-4 text-emerald-500 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18"></path></svg>
+                            </div>
+                        </div>
+                        <!-- Back View -->
+                        <div class="absolute inset-0 bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800 rounded-2xl p-6 flex flex-col justify-between rotate-y-180 backface-hidden shadow-md">
+                            <p class="text-sm text-slate-700 dark:text-emerald-300 leading-relaxed">
+                                A simple organizational collection of IAM users. **Core Exam Trap**: A group is not a true identity principal. Therefore, you *cannot* use an IAM Group inside the `"Principal"` field of S3 buckets or KMS key trust policies.
+                            </p>
+                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase">Answer</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="h-64 cursor-pointer relative preserve-3d card-flip-transition" onclick="this.classList.toggle('rotate-y-180')">
+                        <!-- Front View -->
+                        <div class="absolute inset-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-sm backface-hidden">
+                            <div class="space-y-2">
+                                <span class="text-xs font-bold text-emerald-600 tracking-wider uppercase">Flashcard 4</span>
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white">JSON Policy Elements</h3>
+                            </div>
+                            <div class="flex justify-between items-center text-xs text-slate-400">
+                                <span>Click to flip</span>
+                                <svg class="w-4 h-4 text-emerald-500 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18"></path></svg>
+                            </div>
+                        </div>
+                        <!-- Back View -->
+                        <div class="absolute inset-0 bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800 rounded-2xl p-6 flex flex-col justify-between rotate-y-180 backface-hidden shadow-md">
+                            <p class="text-sm text-slate-700 dark:text-emerald-300 leading-relaxed">
+                                JSON policy files declare elements: **Effect** (Allow/Deny), **Action** (programmatic APIs targeted), **Resource** (ARNs mapped), and optional **Condition** qualifiers (restricting operations by source IP, dates, or MFA).
+                            </p>
+                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase">Answer</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 5 -->
+                    <div class="h-64 cursor-pointer relative preserve-3d card-flip-transition" onclick="this.classList.toggle('rotate-y-180')">
+                        <!-- Front View -->
+                        <div class="absolute inset-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-sm backface-hidden">
+                            <div class="space-y-2">
+                                <span class="text-xs font-bold text-emerald-600 tracking-wider uppercase">Flashcard 5</span>
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Principle of Least Privilege</h3>
+                            </div>
+                            <div class="flex justify-between items-center text-xs text-slate-400">
+                                <span>Click to flip</span>
+                                <svg class="w-4 h-4 text-emerald-500 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18"></path></svg>
+                            </div>
+                        </div>
+                        <!-- Back View -->
+                        <div class="absolute inset-0 bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800 rounded-2xl p-6 flex flex-col justify-between rotate-y-180 backface-hidden shadow-md">
+                            <p class="text-sm text-slate-700 dark:text-emerald-300 leading-relaxed">
+                                A critical design pillar declaring that users and apps should only possess the minimum required credentials to perform specific tasks. Avoid generic administrators (`*:*`) and assign context-managed resources.
+                            </p>
+                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase">Answer</span>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Section 3: The HQ Analogy Block -->
+            <section id="analogy" class="scroll-mt-24 bg-white dark:bg-slate-900 p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors space-y-6">
+                <div class="flex items-center space-x-3">
+                    <span class="px-3 py-1 bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 text-xs font-bold rounded-md">The Metaphor</span>
+                    <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">The High-Security Smart Headquarters</h2>
+                </div>
+
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                    Conceptualize an AWS Account as a high-security office complex to easily understand credentials, access policies, and session tokens:
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800 space-y-3">
+                        <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center font-bold">1</div>
+                        <h4 class="font-bold text-slate-900 dark:text-white">Authentication</h4>
+                        <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                            Proving who you are at the front gate. Providing a physical ID with matching biometric authentication (MFA). Once verified, you get in.
+                        </p>
+                    </div>
+
+                    <div class="p-5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800 space-y-3">
+                        <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center font-bold">2</div>
+                        <h4 class="font-bold text-slate-900 dark:text-white">Authorization</h4>
+                        <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                            A custom smart badge (JSON Policy) specifying exactly which floor, elevator, and server cabinet locks open when swiped.
+                        </p>
+                    </div>
+
+                    <div class="p-5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800 space-y-3">
+                        <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-lg flex items-center justify-center font-bold">3</div>
+                        <h4 class="font-bold text-slate-900 dark:text-white">IAM Roles</h4>
+                        <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                            Escorted visitor keycards. Temporary badges assigned to dynamic maintenance contractors that self-destruct (expire) in 4 hours.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Main Lesson Content -->
+            <section id="lesson-content" class="scroll-mt-24 bg-white dark:bg-slate-900 p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors space-y-8">
+                
+                <div class="flex items-center space-x-3">
+                    <span class="px-3 py-1 bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 text-xs font-bold rounded-md">Main Lesson</span>
+                    <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Core Educational Blueprint</h2>
+                </div>
+
+                <!-- Callout Banner -->
+                <div class="p-4 bg-amber-50 dark:bg-amber-950/20 rounded-xl border-l-4 border-amber-500 text-sm text-amber-900 dark:text-amber-300 space-y-2">
+                    <span class="font-extrabold flex items-center gap-2">
+                        <!-- Alert icon -->
+                        <svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                        Important Certification Concept: Evaluation Logic Flow
+                    </span>
+                    <p class="leading-relaxed">
+                        AWS security starts with a **Default Deny** posture. If an evaluation encounters a single explicit **Deny** across *any* applicable policy (Identity, S3 Resource, or Organization SCP), the access request is instantly rejected, overriding any other explicit **Allow** statements.
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Anatomy of an IAM JSON Policy Document</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-300">
+                        Take a look at a typical read-only JSON policy document for an S3 Coffee Recipes storage container:
+                    </p>
+
+                    <!-- Interactive Code Block Component -->
+                    <div class="relative bg-slate-950 rounded-xl border border-slate-800 p-4 font-mono text-xs text-slate-300 overflow-x-auto shadow-inner">
+                        <span class="absolute right-4 top-4 text-[10px] text-slate-500 bg-slate-900 px-2 py-1 rounded">JSON Syntax</span>
+                        <pre><code>{
+  <span class="text-indigo-400">"Version"</span>: <span class="text-emerald-400">"2012-10-17"</span>,
+  <span class="text-indigo-400">"Statement"</span>: [
+    {
+      <span class="text-indigo-400">"Sid"</span>: <span class="text-blue-400">"AllowSpecificS3BucketRead"</span>,
+      <span class="text-indigo-400">"Effect"</span>: <span class="text-emerald-400">"Allow"</span>,
+      <span class="text-indigo-400">"Action"</span>: [
+        <span class="text-amber-400">"s3:GetObject"</span>,
+        <span class="text-amber-400">"s3:ListBucket"</span>
+      ],
+      <span class="text-indigo-400">"Resource"</span>: [
+        <span class="text-pink-400">"arn:aws:s3:::awscafe-recipes"</span>,
+        <span class="text-pink-400">"arn:aws:s3:::awscafe-recipes/*"</span>
+      ],
+      <span class="text-indigo-400">"Condition"</span>: {
+        <span class="text-indigo-400">"IpAddress"</span>: {
+          <span class="text-blue-400">"aws:SourceIp"</span>: <span class="text-emerald-400">"203.0.113.0/24"</span>
+        }
+      }
+    }
+  ]
+}</code></pre>
+                    </div>
+
+                    <!-- Elements Accordion / Highlight -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800">
+                            <span class="text-xs font-bold text-indigo-500 uppercase">Version Control</span>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                                Always use **"2012-10-17"**. If omitted, AWS treats variables and complex conditions under legacy structures which will fail verification.
+                            </p>
+                        </div>
+                        <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800">
+                            <span class="text-xs font-bold text-pink-500 uppercase">Resource Format (ARN)</span>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                                Amazon Resource Names format: `arn:partition:service:region:account:resource-id`. Note that S3 lacks region indicators as it is a global namespace.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secure Compute Highlight (IMDSv2 vs Roles) -->
+                <div class="space-y-4 pt-6 border-t border-slate-100 dark:border-slate-800">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Secure Compute Access (IMDSv2 & STS)</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-300">
+                        AWS recommends using **IAM Instance Profile Roles** instead of hardcoded long-term Access Keys. When an EC2 instance profile is initialized, local metadata loops allow applications to communicate with security services dynamically:
+                    </p>
+
+                    <div class="bg-indigo-50 dark:bg-indigo-950/20 rounded-xl p-5 border border-indigo-100 dark:border-indigo-900/30 flex flex-col md:flex-row gap-6 items-center">
+                        <div class="flex-1 space-y-2">
+                            <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase">Interactive Deep-Dive</span>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                <strong>How it works:</strong> The application queries the local Link-Local address `169.254.169.254`. Under modern security guardrails, **IMDSv2 (Instance Metadata Service Version 2)** uses a session-oriented stateful flow to secure token exchanges before providing temporary rotating credentials via **AWS Security Token Service (STS)**.
+                            </p>
+                        </div>
+                        <div class="flex-shrink-0 bg-white dark:bg-slate-950 p-3 rounded-lg border border-indigo-100 dark:border-indigo-800 text-[11px] font-mono shadow-sm">
+                            <span class="text-rose-500">GET</span> token: /api/token<br>
+                            <span class="text-rose-500">GET</span> metadata/iam/credentials<br>
+                            <span class="text-emerald-500">STS Response:</span> Exp_In: 1hr
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5: Interactive Policy Evaluation Simulator (Feature Component) -->
+            <section id="simulator" class="scroll-mt-24 bg-white dark:bg-slate-900 p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors space-y-6">
+                <div class="flex items-center space-x-3">
+                    <span class="px-3 py-1 bg-brand-100 text-brand-800 dark:bg-brand-900/30 dark:text-brand-300 text-xs font-bold rounded-md">Interactive Simulator</span>
+                    <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">AWS Authorization Evaluation Engine</h2>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
+                    How does AWS calculate multiple conflicting IAM statements? Toggle the four structural policies below and click **Run Evaluation Engine** to see the programmatic step-by-step resolution.
+                </p>
+
+                <!-- Sandbox Container -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 dark:bg-slate-950 p-6 rounded-xl border border-slate-100 dark:border-slate-800">
+                    
+                    <!-- Form Controls -->
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-sm text-slate-900 dark:text-white uppercase tracking-wider">Configure Policies</h4>
+                        
+                        <!-- Policy 1 -->
+                        <div class="p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                            <div>
+                                <h5 class="text-xs font-bold text-slate-800 dark:text-slate-100">Identity Policy</h5>
+                                <p class="text-[10px] text-slate-400">Directly attached to Bob's IAM user</p>
+                            </div>
+                            <select id="simIdentity" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-1.5 rounded focus:ring-1 focus:ring-brand-500">
+                                <option value="ALLOW">Explicit ALLOW S3</option>
+                                <option value="DENY">Explicit DENY S3</option>
+                                <option value="NONE" selected>No Statement</option>
+                            </select>
+                        </div>
+
+                        <!-- Policy 2 -->
+                        <div class="p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                            <div>
+                                <h5 class="text-xs font-bold text-slate-800 dark:text-slate-100">IAM Group Policy</h5>
+                                <p class="text-[10px] text-slate-400">Inherited via Developer Group</p>
+                            </div>
+                            <select id="simGroup" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-1.5 rounded focus:ring-1 focus:ring-brand-500">
+                                <option value="ALLOW" selected>Explicit ALLOW S3</option>
+                                <option value="DENY">Explicit DENY S3</option>
+                                <option value="NONE">No Statement</option>
+                            </select>
+                        </div>
+
+                        <!-- Policy 3 -->
+                        <div class="p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                            <div>
+                                <h5 class="text-xs font-bold text-slate-800 dark:text-slate-100">S3 Bucket Policy</h5>
+                                <p class="text-[10px] text-slate-400">Resource policy directly on Bucket</p>
+                            </div>
+                            <select id="simBucket" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-1.5 rounded focus:ring-1 focus:ring-brand-500">
+                                <option value="ALLOW">Explicit ALLOW S3</option>
+                                <option value="DENY">Explicit DENY S3</option>
+                                <option value="NONE" selected>No Statement</option>
+                            </select>
+                        </div>
+
+                        <!-- Policy 4 -->
+                        <div class="p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                            <div>
+                                <h5 class="text-xs font-bold text-slate-800 dark:text-slate-100">Organizations SCP</h5>
+                                <p class="text-[10px] text-slate-400">Service Control Policy Boundary</p>
+                            </div>
+                            <select id="simSCP" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-1.5 rounded focus:ring-1 focus:ring-brand-500">
+                                <option value="ALLOW" selected>Explicit ALLOW S3</option>
+                                <option value="DENY">Explicit DENY S3</option>
+                                <option value="NONE">No Statement</option>
+                            </select>
+                        </div>
+
+                        <button id="runSimBtn" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-lg text-xs transition-all shadow-sm">
+                            Run Evaluation Engine
+                        </button>
+                    </div>
+
+                    <!-- Simulation Log/Output -->
+                    <div class="flex flex-col justify-between space-y-4">
+                        <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs space-y-2 flex-1 shadow-inner overflow-y-auto max-h-[300px]" id="simLogs">
+                            <span class="text-slate-500">// Engine idle. Click evaluate to start...</span>
+                        </div>
+
+                        <!-- Final Decision Box -->
+                        <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
+                            <div>
+                                <h5 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Final Authorization Status</h5>
+                                <span id="simDecision" class="text-xl font-black text-slate-400">AWAITING INPUT</span>
+                            </div>
+                            <div id="simIcon" class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                                <!-- Default lock icon -->
+                                <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Section 6: Case Study (The AWS Café Timeline) -->
+            <section id="cafe-journey" class="scroll-mt-24 space-y-6">
+                <div class="flex items-center space-x-3">
+                    <span class="px-3 py-1 bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300 text-xs font-bold rounded-md">Case Study</span>
+                    <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">The AWS Café Scaling Journey</h2>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                    As Frank and Martha scaled their small business from static coffee catalogs to full ecommerce points-of-sale, they migrated from critical early configuration failures to solid, scalable cloud security:
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Phase 1 Card -->
+                    <div class="p-6 bg-red-50/50 dark:bg-red-950/10 border border-red-200/50 dark:border-red-900/30 rounded-2xl space-y-4">
+                        <span class="px-2.5 py-1 bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300 text-xs font-extrabold rounded">Phase 1: Startup Disaster</span>
+                        <ul class="space-y-3 text-xs text-slate-700 dark:text-slate-400 leading-relaxed">
+                            <li class="flex items-start">
+                                <svg class="w-4 h-4 text-red-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span>**Daily Root User Logins**: Frank used absolute credentials on local shared PCs.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-4 h-4 text-red-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span>**Excessive Permissions**: Accountants possessed keys allowing modification of live databases.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-4 h-4 text-red-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span>**Exposed long-term keys**: Application code committed directly to github contained explicit credentials.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Phase 2 Card -->
+                    <div class="p-6 bg-emerald-50/50 dark:bg-emerald-950/10 border border-emerald-200/50 dark:border-emerald-900/30 rounded-2xl space-y-4">
+                        <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 text-xs font-extrabold rounded">Phase 2: Scale & Secure</span>
+                        <ul class="space-y-3 text-xs text-slate-700 dark:text-slate-400 leading-relaxed">
+                            <li class="flex items-start">
+                                <svg class="w-4 h-4 text-emerald-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span>**Granular IAM Users**: Enforced individual credentials & mandatory Multi-Factor Authentication (MFA).</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-4 h-4 text-emerald-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span>**Least Privilege Groups**: Segregated POS users from back-end infrastructure logs.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-4 h-4 text-emerald-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span>**IAM Roles for Web App**: Enabled zero administrative password storage on virtual machines.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 7: SAA-C03 Diagnostic Practice Quiz -->
+            <section id="knowledge-quiz" class="scroll-mt-24 bg-white dark:bg-slate-900 p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors space-y-6">
+                
+                <!-- Quiz Banner -->
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-slate-100 dark:border-slate-800 pb-5 gap-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="px-3 py-1 bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-300 text-xs font-bold rounded-md">Exam Prep</span>
+                        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">SAA-C03 Diagnostic Practice Quiz</h2>
+                    </div>
+                    <div class="flex items-center space-x-2 text-xs">
+                        <span class="text-slate-400">Score Tracker:</span>
+                        <span id="quizScoreText" class="font-mono font-bold bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-brand-600 dark:text-brand-400">0/10 (0%)</span>
+                    </div>
+                </div>
+
+                <!-- Quiz Interface App -->
+                <div id="quizAppContainer" class="space-y-6">
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div id="quizProgressBar" class="bg-brand-500 h-full transition-all duration-300" style="width: 10%"></div>
+                    </div>
+
+                    <!-- Question Block -->
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider" id="questionNumber">Question 1 of 10</span>
+                            <span class="text-xs text-slate-400">Difficulty: Medium-Hard</span>
+                        </div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white leading-relaxed" id="quizQuestionText">
+                            An application running on an Amazon EC2 instance needs to read files from an Amazon S3 bucket. The bucket contains confidential company designs. Which method of securing access to the S3 bucket is the most secure and aligns with AWS best practices?
+                        </h3>
+
+                        <!-- Option Cards -->
+                        <div class="grid grid-cols-1 gap-3" id="quizOptionsContainer">
+                            <!-- Populated Dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800">
+                        <button id="prevBtn" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-all disabled:opacity-50 disabled:pointer-events-none">
+                            Previous Question
+                        </button>
+                        <button id="checkAnswerBtn" class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm">
+                            Submit Answer
+                        </button>
+                        <button id="nextBtn" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-all disabled:opacity-50 disabled:pointer-events-none">
+                            Next Question
+                        </button>
+                    </div>
+
+                    <!-- Feedback Display Panel (Hidden initially) -->
+                    <div id="quizFeedbackPanel" class="hidden p-5 rounded-xl border space-y-2 leading-relaxed text-sm transition-all">
+                        <h4 id="quizFeedbackTitle" class="font-bold">Result</h4>
+                        <p id="quizFeedbackContent" class="text-slate-600 dark:text-slate-400"></p>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Section 8: Instructor ADA Compliance & Accessibility Checklist -->
+            <section id="ada-checklist" class="scroll-mt-24 bg-white dark:bg-slate-900 p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors space-y-6">
+                <div class="flex items-center space-x-3">
+                    <span class="px-3 py-1 bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 text-xs font-bold rounded-md">ADA Compliance</span>
+                    <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">WCAG 2.2 Level AA Presentation Checklist</h2>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
+                    Instructors can use this contextual, interactive checklist when hosting lectures to ensure accessibility compliance. Your checkboxes persist across browser reloads.
+                </p>
+
+                <!-- Interactive Checklist Block -->
+                <div class="space-y-3" id="adaChecklistContainer">
+                    <label class="flex items-start p-3 bg-slate-50 dark:bg-slate-950 rounded-lg border border-slate-100 dark:border-slate-800 cursor-pointer hover:bg-slate-100/50 dark:hover:bg-slate-900/50 transition-colors">
+                        <input type="checkbox" data-idx="0" class="ada-chk w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500 mt-1 mr-3">
+                        <span class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                            <strong>Hierarchical Header Structures:</strong> Headers are sequentially organized (`h1`, `h2`, `h3`, `h4`) with zero nesting bypass jumps to aid keyboard reading focus.
+                        </span>
+                    </label>
+
+                    <label class="flex items-start p-3 bg-slate-50 dark:bg-slate-950 rounded-lg border border-slate-100 dark:border-slate-800 cursor-pointer hover:bg-slate-100/50 dark:hover:bg-slate-900/50 transition-colors">
+                        <input type="checkbox" data-idx="1" class="ada-chk w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500 mt-1 mr-3">
+                        <span class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                            <strong>High-Contrast Warning Callouts:</strong> Text warnings are explicitly declared using written alerts (`> [!WARNING]`) instead of relying purely on visual styling colors.
+                        </span>
+                    </label>
+
+                    <label class="flex items-start p-3 bg-slate-50 dark:bg-slate-950 rounded-lg border border-slate-100 dark:border-slate-800 cursor-pointer hover:bg-slate-100/50 dark:hover:bg-slate-900/50 transition-colors">
+                        <input type="checkbox" data-idx="2" class="ada-chk w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500 mt-1 mr-3">
+                        <span class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                            <strong>Interactive Policy Playground:</strong> Full semantic text alternatives are present alongside interactive components, bypassing static visual dependency barriers.
+                        </span>
+                    </label>
+
+                    <label class="flex items-start p-3 bg-slate-50 dark:bg-slate-950 rounded-lg border border-slate-100 dark:border-slate-800 cursor-pointer hover:bg-slate-100/50 dark:hover:bg-slate-900/50 transition-colors">
+                        <input type="checkbox" data-idx="3" class="ada-chk w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500 mt-1 mr-3">
+                        <span class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                            <strong>Keyboard-Only Accessible Components:</strong> Practice quiz and simulations are fully keyboard navigable with explicit semantic buttons and inputs.
+                        </span>
+                    </label>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 mt-16 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-4">
+            <p>&copy; 2026 ITNW 1336 Cloud Architecting Curriculum Portal. Blinn College.</p>
+            <p>AWS Academy Certified Solutions Architect Associate (SAA-C03) Preparation.</p>
+        </div>
+    </footer>
+
+    <!-- Interactive Scripts -->
+    <script>
+        // ----------------- Theme Switcher -----------------
+        const themeToggle = document.getElementById('themeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+
+        function initTheme() {
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            }
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            }
+        });
+
+        initTheme();
+
+        // ----------------- SAA-C03 Diagnostic Practice Quiz App -----------------
+        const quizData = [
+            {
+                q: "An application running on an Amazon EC2 instance needs to read files from an Amazon S3 bucket. The bucket contains confidential company designs. Which method of securing access to the S3 bucket is the most secure and aligns with AWS best practices?",
+                options: [
+                    "A. Create an IAM User with S3 read permissions, generate an Access Key and Secret Key, and save them in the EC2 user data script so they are loaded as environment variables.",
+                    "B. Create an IAM Role with read permissions for the specific S3 bucket, assign this role to an EC2 instance profile, and associate the instance profile with the EC2 instance.",
+                    "C. Edit the S3 bucket policy to make the bucket public so that the EC2 instance can download the objects via a standard HTTP request.",
+                    "D. Export the credentials of your personal AWS administrator account to a configuration file inside the application's source code folder."
+                ],
+                correctIdx: 1,
+                explanation: "Assisting EC2 instances via an IAM Role and Instance Profile is the gold standard for security. It generates short-lived, temporary credentials through AWS STS, completely eliminating the risk of hardcoding keys."
+            },
+            {
+                q: "A Solutions Architect needs to implement a policy that allows developers to access Amazon DynamoDB tables, but only if they are logging in from the company's corporate office IP address range (192.0.2.0/24). Which IAM policy structure elements must be used to enforce this constraint?",
+                options: [
+                    "A. Add a \"Resource\" block containing arn:aws:iam::192.0.2.0/24.",
+                    "B. Add a \"Principal\" block referencing the corporate network's gateway router ARN.",
+                    "C. Use a \"Condition\" block with an IpAddress check matching the key aws:SourceIp to 192.0.2.0/24.",
+                    "D. Create an IAM Group for the IP address block and add the developers to that group."
+                ],
+                correctIdx: 2,
+                explanation: "The \"Condition\" block evaluates conditional logic against context keys in a request. The key aws:SourceIp represents the caller's originating IPv4 or IPv6 address."
+            },
+            {
+                q: "A developer belongs to two IAM Groups: 'Group-Alpha' and 'Group-Beta.' Group-Alpha's attached policy contains an Allow statement for all DynamoDB actions (dynamodb:*) on any resource. Group-Beta's attached policy contains a Deny statement for dynamodb:DeleteTable on all resources. If the developer attempts to delete a table named 'awscafe-orders', how will AWS evaluate this request?",
+                options: [
+                    "A. The request will be allowed because Group-Alpha's policy grants permissions on any resource, and it is evaluated first.",
+                    "B. The request will be denied because the system defaults to Deny, and developers are not administrators.",
+                    "C. The request will be allowed because the Allow statement and Deny statement cancel each other out, defaulting back to the user's base console settings.",
+                    "D. The request will be denied because Group-Beta's policy contains an explicit Deny statement for dynamodb:DeleteTable, which overrides any explicit Allows."
+                ],
+                correctIdx: 3,
+                explanation: "AWS policy evaluation logic follows the strict rule: An Explicit Deny always overrides an Explicit Allow. Since Group-Beta has an explicit deny on DeleteTable, this override takes effect even though Group-Alpha allows it."
+            },
+            {
+                q: "Which of the following is a structural difference between an IAM identity-based policy and an S3 resource-based bucket policy?",
+                options: [
+                    "A. An identity-based policy must contain a \"Principal\" element, whereas an S3 bucket policy must never contain a \"Principal\" element.",
+                    "B. An S3 bucket policy must contain a \"Principal\" element, whereas an identity-based policy does not contain a \"Principal\" element.",
+                    "C. Identity-based policies are evaluated before resource-based policies, ignoring explicit denies in resource policies.",
+                    "D. S3 bucket policies only support \"Deny\" statements, whereas identity-based policies support both \"Allow\" and \"Deny\"."
+                ],
+                correctIdx: 1,
+                explanation: "Because identity-based policies are directly attached to a specific user, group, or role, the identity is implicitly the principal. Therefore, identity policies do not require a \"Principal\" block. S3 bucket policies reside directly on S3 and must define who gets access via \"Principal\"."
+            },
+            {
+                q: "A junior cloud engineer is attempting to write a custom IAM JSON policy but keeps receiving syntax validation errors. They present the statement with a \"Principal\" block attached directly to an IAM User. Why does this statement fail validation?",
+                options: [
+                    "A. The action s3:PutObject is invalid and cannot be configured in a JSON policy.",
+                    "B. You cannot specify an individual user like \"Bob\" as a target in an AWS policy.",
+                    "C. An identity-based policy attached directly to a user must not contain a \"Principal\" element.",
+                    "D. S3 operations are not supported by IAM JSON policies."
+                ],
+                correctIdx: 2,
+                explanation: "A \"Principal\" element is explicitly forbidden in identity-based policies. Since the policy is directly attached to the user, the identity is implicitly the principal. Including a \"Principal\" element causes syntax validation errors."
+            },
+            {
+                q: "What service does AWS use behind the scenes to generate temporary security credentials when an IAM Role is assumed by an EC2 instance profile?",
+                options: [
+                    "A. Amazon Cognito",
+                    "B. AWS Security Token Service (STS)",
+                    "C. AWS Directory Service",
+                    "D. AWS Key Management Service (KMS)"
+                ],
+                correctIdx: 1,
+                explanation: "The AWS Security Token Service (STS) is the dedicated service that generates temporary, short-lived security credentials for assumed roles."
+            },
+            {
+                q: "A company is designing a secure administrative policy. They want to ensure that administrators can only execute sensitive EC2 stop and termination commands if they have authenticated using Multi-Factor Authentication (MFA). Which condition block structure satisfies this requirement?",
+                options: [
+                    "A. Check the condition \"Null\": {\"aws:MultiFactorAuthPresent\": \"false\"}",
+                    "B. Check the condition \"Bool\": {\"aws:MultiFactorAuthPresent\": \"true\"}",
+                    "C. Add an MFA block inside the \"Principal\" element.",
+                    "D. Use the root user to execute all stop and terminate tasks."
+                ],
+                correctIdx: 1,
+                explanation: "The condition key aws:MultiFactorAuthPresent evaluates to true if the session was authenticated using MFA. Using the \"Bool\" operator to assert true enforces that MFA is present."
+            },
+            {
+                q: "You are auditing an AWS environment and discover that employees are sharing a single IAM User account called 'cafe-developer' to perform day-to-day operations. What is the primary security risk associated with this design?",
+                options: [
+                    "A. AWS will charge extra fees for concurrent logins on a single IAM User.",
+                    "B. Sharing an IAM user account makes it impossible to achieve individual auditing and accountability in CloudTrail logs.",
+                    "C. The account password will expire automatically every time a different IP address connects.",
+                    "D. Concurrent connections to a single IAM User will severely degrade the API response times of AWS services."
+                ],
+                correctIdx: 1,
+                explanation: "If multiple people use the exact same IAM user account, every action logged in AWS CloudTrail will appear under that shared user account name, making individual audit tracking impossible."
+            },
+            {
+                q: "Which task can only be performed by the AWS Account Root User, requiring you to keep root credentials safe and secure?",
+                options: [
+                    "A. Creating a new S3 bucket.",
+                    "B. Attaching an IAM Role to an EC2 instance profile.",
+                    "C. Changing the AWS Support plan.",
+                    "D. Querying a DynamoDB database."
+                ],
+                correctIdx: 2,
+                explanation: "Changing the AWS Support plan, closing the account, and modifying root credentials are highly sensitive tasks that require root credentials. S3, IAM Roles, and DB queries can be handled by normal IAM Administrators."
+            },
+            {
+                q: "What are the default permissions of a newly created IAM User before any policies are attached?",
+                options: [
+                    "A. They inherit full administrative access (AdministratorAccess).",
+                    "B. They are granted read-only access to all resources in the AWS account.",
+                    "C. They have no permissions to access any resources (implicit deny posture).",
+                    "D. They can only create and manage other IAM users."
+                ],
+                correctIdx: 2,
+                explanation: "A newly created IAM user is born with no permissions (Default Deny/Implicit Deny). They cannot perform any actions until a policy is explicitly attached to their identity or group."
+            }
+        ];
+
+        let currentQuestionIdx = 0;
+        let quizAnswers = Array(quizData.length).fill(null); // stores user answers
+        let quizScore = 0;
+
+        const quizQuestionText = document.getElementById('quizQuestionText');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const questionNumber = document.getElementById('questionNumber');
+        const quizProgressBar = document.getElementById('quizProgressBar');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const checkAnswerBtn = document.getElementById('checkAnswerBtn');
+        const quizFeedbackPanel = document.getElementById('quizFeedbackPanel');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizFeedbackContent = document.getElementById('quizFeedbackContent');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function renderQuestion() {
+            const currentQuestion = quizData[currentQuestionIdx];
+            quizQuestionText.textContent = currentQuestion.q;
+            questionNumber.textContent = `Question ${currentQuestionIdx + 1} of ${quizData.length}`;
+            
+            // Set Progress Bar
+            const progressPct = ((currentQuestionIdx + 1) / quizData.length) * 100;
+            quizProgressBar.style.width = `${progressPct}%`;
+
+            // Reset Options Container
+            quizOptionsContainer.innerHTML = '';
+            
+            // Create Option elements
+            currentQuestion.options.forEach((option, idx) => {
+                const isSelected = quizAnswers[currentQuestionIdx] === idx;
+                
+                const card = document.createElement('button');
+                card.className = `w-full text-left p-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-between ${
+                    isSelected 
+                    ? 'border-brand-500 bg-brand-50/50 dark:bg-brand-900/20 text-brand-900 dark:text-brand-300' 
+                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                }`;
+                card.onclick = () => selectOption(idx);
+                card.innerHTML = `
+                    <span>${option}</span>
+                    <div class="w-5 h-5 rounded-full border border-slate-300 dark:border-slate-700 flex items-center justify-center flex-shrink-0 ml-3">
+                        ${isSelected ? '<div class="w-2.5 h-2.5 rounded-full bg-brand-600"></div>' : ''}
+                    </div>
+                `;
+                quizOptionsContainer.appendChild(card);
+            });
+
+            // Update Nav Buttons
+            prevBtn.disabled = currentQuestionIdx === 0;
+            nextBtn.disabled = currentQuestionIdx === quizData.length - 1;
+
+            // Render Feedback Panel
+            if (quizAnswers[currentQuestionIdx] !== null) {
+                showFeedback(quizAnswers[currentQuestionIdx]);
+            } else {
+                quizFeedbackPanel.className = 'hidden';
+                checkAnswerBtn.disabled = false;
+                checkAnswerBtn.textContent = 'Submit Answer';
+            }
+        }
+
+        function selectOption(idx) {
+            // Only allow selection if not already answered
+            if (quizAnswers[currentQuestionIdx] === null) {
+                quizAnswers[currentQuestionIdx] = idx;
+                // re-render question to show highlighted option
+                renderQuestion();
+            }
+        }
+
+        function checkAnswer() {
+            const selectedIdx = quizAnswers[currentQuestionIdx];
+            if (selectedIdx === null) {
+                // Use a non-blocking modal fallback warning instead of alert()
+                showWarningModal("Please select an option before submitting.");
+                return;
+            }
+            showFeedback(selectedIdx);
+            calculateScore();
+        }
+
+        function showFeedback(selectedIdx) {
+            const currentQuestion = quizData[currentQuestionIdx];
+            const isCorrect = selectedIdx === currentQuestion.correctIdx;
+            
+            quizFeedbackPanel.classList.remove('hidden');
+            if (isCorrect) {
+                quizFeedbackPanel.className = "p-5 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/20 dark:border-emerald-900/30 dark:text-emerald-300 space-y-2";
+                quizFeedbackTitle.textContent = "Correct!";
+            } else {
+                quizFeedbackPanel.className = "p-5 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 dark:bg-rose-950/20 dark:border-rose-900/30 dark:text-rose-300 space-y-2";
+                quizFeedbackTitle.textContent = `Incorrect (You selected Option ${String.fromCharCode(65 + selectedIdx)})`;
+            }
+            
+            quizFeedbackContent.innerHTML = `
+                <strong>Correct Option: ${String.fromCharCode(65 + currentQuestion.correctIdx)}</strong><br>
+                <span class="block mt-2">${currentQuestion.explanation}</span>
+            `;
+            checkAnswerBtn.disabled = true;
+            checkAnswerBtn.textContent = 'Submitted';
+        }
+
+        function calculateScore() {
+            let correctCount = 0;
+            quizAnswers.forEach((ans, idx) => {
+                if (ans === quizData[idx].correctIdx) {
+                    correctCount++;
+                }
+            });
+            const scorePct = Math.round((correctCount / quizData.length) * 100);
+            quizScoreText.textContent = `${correctCount}/${quizData.length} (${scorePct}%)`;
+        }
+
+        checkAnswerBtn.onclick = checkAnswer;
+
+        prevBtn.onclick = () => {
+            if (currentQuestionIdx > 0) {
+                currentQuestionIdx--;
+                renderQuestion();
+            }
+        };
+
+        nextBtn.onclick = () => {
+            if (currentQuestionIdx < quizData.length - 1) {
+                currentQuestionIdx++;
+                renderQuestion();
+            }
+        };
+
+        // Custom Modal Overlay Warning Function
+        function showWarningModal(msg) {
+            const modal = document.createElement('div');
+            modal.className = "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4";
+            modal.innerHTML = `
+                <div class="bg-white dark:bg-slate-900 max-w-sm w-full p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
+                    <div class="flex items-center space-x-3 text-amber-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        <h4 class="font-bold text-slate-900 dark:text-white text-base">Quiz Engine Alert</h4>
+                    </div>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">${msg}</p>
+                    <button class="w-full py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-lg text-xs transition-all" onclick="this.closest('.fixed').remove()">
+                        Understood
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Initialize Quiz
+        renderQuestion();
+
+
+        // ----------------- AWS Policy Evaluation Engine Simulator -----------------
+        const simIdentity = document.getElementById('simIdentity');
+        const simGroup = document.getElementById('simGroup');
+        const simBucket = document.getElementById('simBucket');
+        const simSCP = document.getElementById('simSCP');
+        const runSimBtn = document.getElementById('runSimBtn');
+        const simLogs = document.getElementById('simLogs');
+        const simDecision = document.getElementById('simDecision');
+        const simIcon = document.getElementById('simIcon');
+
+        runSimBtn.addEventListener('click', () => {
+            let logs = [];
+            let decision = "ALLOW"; // start optimistic, default deny handles empty cases later
+            let hasAllow = false;
+            let hasDeny = false;
+
+            logs.push(`<span class="text-brand-400">[SYSTEM] Starting AWS Authorization Engine evaluation...</span>`);
+            logs.push(`[SYSTEM] Baseline posture: DEFAULT DENY initialized.`);
+
+            // Get selected variables
+            const idVal = simIdentity.value;
+            const groupVal = simGroup.value;
+            const bucketVal = simBucket.value;
+            const scpVal = simSCP.value;
+
+            // Step 1: Evaluate SCP Boundary
+            logs.push(`[1/4] Evaluating AWS Organizations SCP bounds...`);
+            if (scpVal === "DENY") {
+                hasDeny = true;
+                logs.push(`<span class="text-rose-500"> >> [DENY] SCP explicitly blocks action. Evaluation stops here!</span>`);
+            } else if (scpVal === "ALLOW") {
+                logs.push(` >> [ALLOW] SCP permissions allow action to pass.`);
+            } else {
+                logs.push(` >> [NONE] SCP does not specify, default rules apply.`);
+            }
+
+            // Step 2: Evaluate Identity Policy (Bob)
+            if (!hasDeny) {
+                logs.push(`[2/4] Evaluating Identity-Based Policies...`);
+                if (idVal === "DENY") {
+                    hasDeny = true;
+                    logs.push(`<span class="text-rose-500"> >> [DENY] Explicit deny found on user.</span>`);
+                } else if (idVal === "ALLOW") {
+                    hasAllow = true;
+                    logs.push(` >> [ALLOW] Explicit allow attached to user Bob.`);
+                } else {
+                    logs.push(` >> [NONE] No matching identity statements found.`);
+                }
+            }
+
+            // Step 3: Evaluate Group Policy (Developers)
+            if (!hasDeny) {
+                logs.push(`[3/4] Evaluating Group-Based Policies...`);
+                if (groupVal === "DENY") {
+                    hasDeny = true;
+                    logs.push(`<span class="text-rose-500"> >> [DENY] Explicit deny found in Group developers policy.</span>`);
+                } else if (groupVal === "ALLOW") {
+                    hasAllow = true;
+                    logs.push(` >> [ALLOW] Explicit allow found in Group developers policy.`);
+                } else {
+                    logs.push(` >> [NONE] No group policy statements mapped.`);
+                }
+            }
+
+            // Step 4: Evaluate S3 Resource Policy
+            if (!hasDeny) {
+                logs.push(`[4/4] Evaluating Resource-Based Bucket Policy...`);
+                if (bucketVal === "DENY") {
+                    hasDeny = true;
+                    logs.push(`<span class="text-rose-500"> >> [DENY] Explicit S3 resource policy blocks caller.</span>`);
+                } else if (bucketVal === "ALLOW") {
+                    hasAllow = true;
+                    logs.push(` >> [ALLOW] S3 Bucket policy allows access.`);
+                } else {
+                    logs.push(` >> [NONE] No S3 resource statement parsed.`);
+                }
+            }
+
+            // Final Decision Logic Formulation
+            logs.push(`[RESULT] Final calculations executing...`);
+            if (hasDeny) {
+                decision = "DENY";
+                logs.push(`<span class="text-rose-500 font-bold"> >> Access Denied: Overridden by explicit Deny.</span>`);
+            } else if (hasAllow) {
+                decision = "ALLOW";
+                logs.push(`<span class="text-emerald-500 font-bold"> >> Access Allowed: Match statement allowed safely.</span>`);
+            } else {
+                decision = "DENY";
+                logs.push(`<span class="text-amber-500"> >> Access Denied: Implicit default deny posture caught request.</span>`);
+            }
+
+            // Render Output logs
+            simLogs.innerHTML = logs.join("<br>");
+            
+            // Adjust decision indicators
+            if (decision === "ALLOW") {
+                simDecision.textContent = "AUTHORIZED";
+                simDecision.className = "text-xl font-black text-emerald-600 dark:text-emerald-400";
+                simIcon.className = "w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-600";
+                simIcon.innerHTML = `
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>
+                `;
+            } else {
+                simDecision.textContent = "DENIED";
+                simDecision.className = "text-xl font-black text-rose-600 dark:text-rose-400";
+                simIcon.className = "w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-950/40 flex items-center justify-center text-rose-600";
+                simIcon.innerHTML = `
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                `;
+            }
+        });
+
+        // ----------------- Persistent ADA Checklist State -----------------
+        const checkboxes = document.querySelectorAll('.ada-chk');
+
+        function loadChecklistState() {
+            const savedState = JSON.parse(localStorage.getItem('ada_checklist_m3'));
+            if (savedState) {
+                checkboxes.forEach((chk, idx) => {
+                    chk.checked = !!savedState[idx];
+                });
+            }
+        }
+
+        function saveChecklistState() {
+            const state = [];
+            checkboxes.forEach((chk) => {
+                state.push(chk.checked);
+            });
+            localStorage.setItem('ada_checklist_m3', JSON.stringify(state));
+        }
+
+        checkboxes.forEach((chk) => {
+            chk.addEventListener('change', saveChecklistState);
+        });
+
+        loadChecklistState();
+
+    </script>
+</body>
+</html>
